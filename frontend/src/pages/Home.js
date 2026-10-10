@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Star, Truck, ShieldCheck, CreditCard, Gift } from "lucide-react";
+import { ArrowRight, Star, Truck, ShieldCheck, CreditCard, Gift, Mail } from "lucide-react";
 import { api } from "@/api";
 import LogoMark from "@/components/LogoMark";
 import introCampaign from "@/assets/intro-campaign.jpg";
@@ -370,9 +370,32 @@ function Newsletter() {
   );
 }
 
+/* Bandeau d'avantages — grenat signature, compact */
+function BenefitsBar() {
+  const items = [
+    { icon: Truck, label: "LIVRAISON STANDARD ESTIMÉE : 7 À 12 JOURS" },
+    { icon: Gift, label: "LIVRAISON OFFERTE DÈS 100 € D'ACHAT" },
+    { icon: Mail, label: "CONTACT DIRECT AVEC ZEV SHOP" },
+  ];
+  return (
+    <section className="bg-[#8E1721]" data-testid="benefits-bar">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-5 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-12">
+        {items.map(({ icon: Icon, label }) => (
+          <div key={label} className="flex items-center gap-3">
+            <Icon className="w-4 h-4 text-white/80" strokeWidth={1.5} />
+            <p className="font-tech text-[9px] sm:text-[10px] tracking-[0.25em] text-white/90">
+              {label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   // Placeholder temporaire : en attendant les données de ventes réelles,
-  // la section Meilleures ventes affiche les modèles groupés actuels.
+  // la section « À découvrir » affiche les modèles groupés actuels.
   // Dès que l'historique de commandes sera disponible, on remplacera
   // `GROUPED_PRODUCTS` par un classement calculé côté API.
   const recommended = PRODUCTS.filter((p) => p.badge === "recommended");
@@ -381,12 +404,13 @@ export default function Home() {
     <>
       <Intro />
       <Marquee />
+      <BenefitsBar />
       <ProductSection
         testid="bestsellers-section"
-        eyebrow="LES PLUS DEMANDÉS"
-        title="Meilleures ventes"
+        eyebrow="SÉLECTION ZEV SHOP"
+        title="À découvrir"
         items={GROUPED_PRODUCTS}
-        emptyNote="Les meilleures ventes s'afficheront automatiquement dès que les données seront disponibles."
+        emptyNote="La sélection s'affichera automatiquement dès que les données seront disponibles."
       />
       <ProductSection
         testid="recommendations-section"

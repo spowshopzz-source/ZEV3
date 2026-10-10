@@ -4,6 +4,10 @@
 
 @layer base {
   :root {
+    --zev-black: #111111;
+    --zev-red: #8E1721;
+    --zev-red-dark: #64111B;
+    --zev-rose: #F5F1F1;
     --background: 0 0% 100%;
     --foreground: 0 0% 4%;
     --card: 0 0% 100%;

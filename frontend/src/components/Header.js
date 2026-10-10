@@ -42,14 +42,14 @@ function Dropdown({ label, items, light = false }) {
         <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" />
       </button>
       <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
-        <div className="bg-white border border-black/10 shadow-[0_24px_48px_rgba(0,0,0,0.08)] p-3 min-w-[230px] rounded-2xl">
-          <div className="flex flex-col gap-1.5">
+        <div className="bg-white border border-black/10 shadow-[0_16px_36px_rgba(0,0,0,0.07)] p-3.5 min-w-[230px] rounded-2xl">
+          <div className="flex flex-col gap-2">
             {items.map((item) => (
               <Link
                 key={item.slug}
                 to={`/categorie/${item.slug}`}
                 data-testid={`nav-sub-${item.slug}`}
-                className="block px-4 py-2 rounded-full bg-[#F3F4F6] hover:bg-[#8E1721] font-tech text-[11px] tracking-[0.2em] text-black/65 hover:text-white transition-colors duration-150"
+                className="block px-5 py-2.5 rounded-full bg-[#F3F4F6] hover:bg-[#8E1721] font-tech text-[11px] tracking-[0.2em] text-black/70 hover:text-white transition-colors duration-150"
               >
                 {item.label}
               </Link>
