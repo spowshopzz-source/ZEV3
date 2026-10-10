@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 0 0% 4%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
+    --radius: 0.5rem;
+
+    /* ZEV SHOP — accent grenat (couleur signature secondaire).
+       Inspirée du visuel d'accueil, utilisée avec parcimonie :
+       filtres actifs, indicateurs sélectionnés, survols discrets. */
+    --accent-garnet: 352 73% 32%;      /* #8E1721 */
+    --accent-garnet-dark: 352 73% 24%;  /* survols/press */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  button:not(:disabled):active {
+    transform: scale(0.97);
+  }
+  body {
+    @apply text-foreground;
+    margin: 0;
+    background: #ffffff;
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: #0a0a0a;
+    color: #ffffff;
+  }
+}
+
+@layer utilities {
+  /* Dela Gothic One — titres éditoriaux de grande taille, voix d'identité.
+     Usage : titres de pages, titres de sections. */
+  .font-display {
+    font-family: "Dela Gothic One", "Unbounded", "Impact", sans-serif;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+    line-height: 0.98;
+  }
+  /* Manrope — police fonctionnelle (noms produits, prix, filtres, menus,
+     descriptions, boutons, informations secondaires). */
+  .font-tech {
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+  }
+  /* Logo ZEV SHOP uniquement — conserve la typographie d'origine. */
+  .font-brand {
+    font-family: "Unbounded", sans-serif;
+  }
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.06);
+  }
+  .z-watermark {
+    -webkit-mask-image: url("./assets/zmask.png");
+    mask-image: url("./assets/zmask.png");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
