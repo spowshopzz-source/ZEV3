@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { api, formatApiError } from "@/api";
-import { Truck, PackageCheck } from "lucide-react";
+import { Truck, PackageCheck, Mail, Instagram } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -33,6 +33,11 @@ function PageHero({ eyebrow, title, children }) {
 }
 
 export function Livraison() {
+  const RATES = [
+    { label: "Panier inférieur à 50 €", cost: "5 €" },
+    { label: "Panier de 50 € à moins de 100 €", cost: "2,50 €" },
+    { label: "Panier à partir de 100 €", cost: "Offerte" },
+  ];
   return (
     <div className="min-h-screen pt-40 pb-24 px-6 max-w-3xl mx-auto">
       <PageHero eyebrow="ZEV SHOP — SERVICES" title="Livraison">
@@ -45,27 +50,35 @@ export function Livraison() {
         <Truck className="w-8 h-8 text-black/60" strokeWidth={1.5} />
         <p className="font-display font-extrabold text-2xl mt-6 text-black">7 à 12 jours</p>
         <p className="font-tech text-[10px] tracking-[0.3em] text-black/45 mt-3">
-          DÉLAI&nbsp;STANDARD&nbsp;INDICATIF
+          DÉLAI&nbsp;STANDARD&nbsp;ESTIMÉ
         </p>
       </div>
 
-      <div className="mt-10 border border-dashed border-black/15 rounded-3xl py-12 px-8 text-center" data-testid="delivery-structure">
-        <p className="font-tech text-[10px] tracking-[0.35em] text-black/45">
-          STRUCTURE&nbsp;PRÊTE&nbsp;À&nbsp;ÊTRE&nbsp;COMPLÉTÉE
+      <div className="mt-8 border border-black/10 rounded-3xl py-10 px-8" data-testid="delivery-rates">
+        <p className="font-tech text-[10px] tracking-[0.35em] text-black/45 text-center">
+          FRAIS&nbsp;DE&nbsp;LIVRAISON
         </p>
-        <div className="grid sm:grid-cols-2 gap-x-10 gap-y-4 mt-8 text-left">
-          {["Pays desservis", "Frais de livraison", "Livraison express", "Transporteur", "Numéro de suivi", "Options par pays"].map((k) => (
-            <div key={k} className="flex items-center justify-between border-b border-black/10 pb-3">
-              <span className="font-tech text-[10px] tracking-[0.2em] text-black/55">{k}</span>
-              <span className="font-tech text-[10px] tracking-[0.2em] text-black/35">À définir</span>
+        <div className="flex flex-col gap-4 mt-8">
+          {RATES.map((r, i) => (
+            <div key={r.label} className="flex items-center justify-between border-b border-black/10 pb-3" data-testid={`delivery-rate-${i}`}>
+              <span className="font-tech text-[10px] tracking-[0.2em] text-black/55">{r.label}</span>
+              <span className="font-display text-xs font-bold tracking-[0.1em] text-black">{r.cost}</span>
             </div>
           ))}
         </div>
+        <p className="font-tech text-[9px] tracking-[0.15em] text-black/40 mt-6 text-center leading-relaxed">
+          Frais calculés sur le sous-total des produits, après réductions éventuelles,
+          avant les frais de livraison. Ils s'actualisent automatiquement dans le panier
+          et au paiement.
+        </p>
       </div>
 
-      <p className="text-center mt-10">
+      <p className="text-center mt-10 flex items-center justify-center gap-8">
         <Link to="/suivi" className="font-tech text-[10px] tracking-[0.3em] text-black border-b border-black pb-1 hover:opacity-60 transition-opacity">
           SUIVRE&nbsp;MA&nbsp;COMMANDE
+        </Link>
+        <Link to="/retours" className="font-tech text-[10px] tracking-[0.3em] text-black border-b border-black pb-1 hover:opacity-60 transition-opacity">
+          RETOURS
         </Link>
       </p>
     </div>
@@ -74,40 +87,70 @@ export function Livraison() {
 
 export function Retours() {
   const SECTIONS = [
-    "Délai de retour",
-    "Conditions",
-    "Procédure",
-    "Remboursement",
-    "Échange",
-    "Produit défectueux",
-    "Frais de retour",
-    "Adresse de retour",
+    {
+      title: "Droit de rétractation — 14 jours",
+      text: "Vous disposez de 14 jours à compter de la réception pour changer d'avis, sans justification, sauf exceptions légales (art. L221-28 : produits personnalisés, produits descellés ne pouvant être renvoyés pour raisons d'hygiène…).",
+    },
+    {
+      title: "Frais de retour",
+      text: "En cas de simple rétractation, les frais directs de retour sont à votre charge — cette information vous est communiquée préalablement, conformément à la loi.",
+    },
+    {
+      title: "Transporteur",
+      text: "Vous pouvez renvoyer votre colis avec le transporteur de votre choix — Chronopost est tout à fait utilisable pour le retour.",
+    },
+    {
+      title: "Procédure",
+      text: "Avant tout envoi, demandez les instructions de retour via la page Contact ou à zzevshop@gmail.com : nous vous communiquerons la marche à suivre et l'adresse de retour.",
+    },
+    {
+      title: "Produit non conforme ou défectueux",
+      text: "Les garanties légales s'appliquent (conformité et vices cachés) : le remplacement ou le remboursement sont possibles et les frais de retour sont alors pris en charge. Voir la page Garanties légales.",
+    },
+    {
+      title: "Remboursement",
+      text: "En cas de rétractation, remboursement au plus tard 14 jours après réception de votre décision, sous réserve du retour ou de la preuve d'expédition des produits.",
+    },
   ];
   return (
     <div className="min-h-screen pt-40 pb-24 px-6 max-w-3xl mx-auto">
-      <PageHero eyebrow="ZEV SHOP — SERVICES" title="Retours">
+      <PageHero eyebrow="ZEV SHOP — SERVICES" title="Livraison et retours">
         <p className="font-tech text-[10px] tracking-[0.35em] text-black/40 mt-5">
-          STRUCTURE&nbsp;PRÊTE&nbsp;—&nbsp;RÈGLES&nbsp;À&nbsp;DÉFINIR
+          RÉTRACTATION&nbsp;·&nbsp;RETOURS&nbsp;·&nbsp;GARANTIES
         </p>
       </PageHero>
+
+      <div className="flex flex-col items-center border border-black/10 rounded-3xl py-10 px-8 text-center mb-8" data-testid="returns-delay">
+        <PackageCheck className="w-8 h-8 text-black/60" strokeWidth={1.5} />
+        <p className="font-display font-extrabold text-xl mt-5 text-black">Livraison : 7 à 12 jours</p>
+        <p className="font-tech text-[10px] tracking-[0.2em] text-black/45 mt-3 leading-relaxed">
+          5&nbsp;€&nbsp;(moins de 50&nbsp;€)&nbsp;·&nbsp;2,50&nbsp;€&nbsp;(50&nbsp;à&nbsp;99,99&nbsp;€)&nbsp;·&nbsp;offerte&nbsp;dès&nbsp;100&nbsp;€
+        </p>
+      </div>
+
       <div className="flex flex-col gap-4" data-testid="returns-sections">
         {SECTIONS.map((s, i) => (
           <motion.div
-            key={s}
+            key={s.title}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, delay: i * 0.05, ease: EASE }}
-            className="flex items-center justify-between border border-black/10 rounded-2xl px-6 py-5"
+            className="border border-black/10 rounded-2xl px-6 py-5"
             data-testid={`return-item-${i}`}
           >
-            <span className="font-display text-xs font-bold tracking-[0.15em] text-black">{s.toUpperCase()}</span>
-            <span className="font-tech text-[10px] tracking-[0.25em] text-black/35">À définir</span>
+            <p className="font-display text-xs font-bold tracking-[0.15em] text-black uppercase">{s.title}</p>
+            <p className="font-tech text-[10px] leading-relaxed tracking-[0.1em] text-black/55 mt-2">{s.text}</p>
           </motion.div>
         ))}
       </div>
+
       <p className="text-center mt-10 font-tech text-[10px] tracking-[0.25em] text-black/40">
-        Une question ?{" "}
+        Formulaire type de rétractation :{" "}
+        <Link to="/retractation" className="underline underline-offset-4 hover:text-black" data-testid="returns-retractation-link">
+          page Rétractation
+        </Link>
+        {" "}— une question ?{" "}
         <Link to="/contact" className="underline underline-offset-4 hover:text-black">
           Contactez-nous
         </Link>
@@ -150,8 +193,8 @@ export function APropos() {
 export function Faq() {
   const ITEMS = [
     { q: "Quels sont les délais de livraison ?", a: "Délai standard estimé : 7 à 12 jours." },
-    { q: "Quels sont les frais de livraison ?", a: "À définir." },
-    { q: "Comment retourner un article ?", a: "À définir — voir la page Retours." },
+    { q: "Quels sont les frais de livraison ?", a: "5 € (panier inférieur à 50 €), 2,50 € (de 50 € à moins de 100 €), offerte dès 100 €." },
+    { q: "Comment retourner un article ?", a: "Vous disposez de 14 jours après réception. Demandez les instructions via la page Contact — détails sur la page Retours." },
     { q: "Comment suivre ma commande ?", a: "Depuis la page Suivi de commande, avec votre numéro de commande." },
     { q: "Puis-je commander sans compte ?", a: "Oui. Avec un compte : historique, wishlist, suivi simplifié et programme de récompense (1 000 € d'achats → coupon de 100 €)." },
   ];
@@ -207,6 +250,34 @@ export function Contact() {
           ÉCRIVEZ-NOUS
         </p>
       </PageHero>
+
+      <div className="grid sm:grid-cols-2 gap-4 mb-10" data-testid="contact-channels">
+        <a
+          href="mailto:zzevshop@gmail.com"
+          data-testid="contact-email-link"
+          className="flex items-center gap-4 border border-black/10 rounded-3xl px-6 py-5 hover:border-black/30 transition-colors"
+        >
+          <Mail className="w-5 h-5 text-black/60 shrink-0" strokeWidth={1.5} />
+          <div>
+            <p className="font-tech text-[9px] tracking-[0.3em] text-black/40">EMAIL</p>
+            <p className="font-display text-xs font-bold text-black mt-1">zzevshop@gmail.com</p>
+          </div>
+        </a>
+        <a
+          href="https://www.instagram.com/zzevshop/"
+          target="_blank"
+          rel="noreferrer"
+          data-testid="contact-instagram-link"
+          className="flex items-center gap-4 border border-black/10 rounded-3xl px-6 py-5 hover:border-black/30 transition-colors"
+        >
+          <Instagram className="w-5 h-5 text-black/60 shrink-0" strokeWidth={1.5} />
+          <div>
+            <p className="font-tech text-[9px] tracking-[0.3em] text-black/40">INSTAGRAM</p>
+            <p className="font-display text-xs font-bold text-black mt-1">@zzevshop</p>
+          </div>
+        </a>
+      </div>
+
       {done ? (
         <p className="border border-black/10 rounded-3xl py-14 text-center font-tech text-[11px] tracking-[0.25em] text-black/60" data-testid="contact-success">
           Message reçu. Nous vous répondrons à l'adresse indiquée.

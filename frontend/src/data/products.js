@@ -169,7 +169,7 @@ export const CATALOG = [
         discountPercent: null,
         available: true,
         swatch: "linear-gradient(160deg, #F4F4F4 45%, #19C8DC 100%)",
-        swatchFlat: "linear-gradient(135deg, #F2F2F2 0%, #F2F2F2 50%, #19C8DC 50%, #19C8DC 100%)",
+        swatchFlat: "linear-gradient(135deg, #F2F2F2, #19C8DC)",
         glow: "rgba(0, 0, 0, 0.24)",
         spotlight: "rgba(0, 0, 0, 0.05)",
         shadowTint: "rgba(10, 10, 10, 0.26)",
@@ -188,7 +188,7 @@ export const CATALOG = [
         discountPercent: null,
         available: true,
         swatch: "linear-gradient(160deg, #7A1230 55%, #0A0A0A 100%)",
-        swatchFlat: "linear-gradient(135deg, #7A1230 0%, #7A1230 50%, #0A0A0A 50%, #0A0A0A 100%)",
+        swatchFlat: "linear-gradient(135deg, #7A1230, #0A0A0A)",
         glow: "rgba(0, 0, 0, 0.28)",
         spotlight: "rgba(0, 0, 0, 0.05)",
         shadowTint: "rgba(10, 10, 10, 0.27)",
@@ -292,4 +292,25 @@ export function priceLabel(variant) {
     }
   }
   return String(price);
+}
+
+/*
+ * Frais de livraison — calculés sur le sous-total des produits (après
+ * réductions éventuelles), avant les frais de livraison.
+ * Délai standard estimé : 7 à 12 jours.
+ */
+export const SHIPPING_DELAY = "7 à 12 jours";
+export const SHIPPING_RULES_LABEL = "5 € · 2,50 € dès 50 € · offerte dès 100 €";
+export function shippingCost(subtotal) {
+  if (subtotal === null || subtotal === undefined) return null;
+  if (subtotal >= 100) return 0;
+  if (subtotal >= 50) return 2.5;
+  return 5;
+}
+export function eurLabel(amount) {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+  }).format(amount);
 }

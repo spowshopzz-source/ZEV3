@@ -27,7 +27,7 @@ export default function ColorSelectors({ products, active, idPrefix = "" }) {
               i === active ? "scale-110" : "opacity-90 hover:opacity-100"
             }`}
             style={{
-              background: p.swatch,
+              background: p.swatchFlat || p.swatch,
               boxShadow:
                 i === active
                   ? "0 0 0 2px #0A0A0A"

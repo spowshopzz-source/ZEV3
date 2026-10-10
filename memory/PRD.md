@@ -96,3 +96,9 @@ Simplify the existing site into a professional fashion ecommerce store called ZE
 - Dependances reinstallees (pip + yarn), JWT_SECRET genere dans backend/.env, admin seed: admin@zevshop.com / ZevAdmin2025!.
 - Verifie: API (login/me/wishlist/newsletter OK), accueil, catalogue, fiche produit, variantes, panier (ajout taille 42), mobile 375px.
 - Liaison Git non conservee (choix utilisateur: import fichiers uniquement).
+
+## Finalisation modifications (2026-07-14)
+- Pastilles plates (swatchFlat) sur fiche produit + degrades lisses bicolores cyan/rouge.
+- Frais de port 5 EUR / 2,50 EUR / offerte des 100 EUR (helper shippingCost dans products.js), affiches panier + checkout.
+- Pages Livraison, Retours (retractation 14j, Chronopost, garanties), Contact (email + Instagram) completees.
+- Pages legales creees: mentions-legales, cgv, confidentialite, cookies, retractation (formulaire type), garanties, mediation — placeholders [A completer] pour identite/SIRET/adresse/mediateur.

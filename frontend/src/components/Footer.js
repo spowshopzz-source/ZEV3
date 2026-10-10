@@ -114,9 +114,13 @@ export default function Footer() {
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-1 font-tech text-[9px] tracking-[0.3em] text-black/35">
             <span>FRANÇAIS</span>
             <span>EUR</span>
-            <span data-testid="legal-placeholder">
-              INFORMATIONS&nbsp;LÉGALES&nbsp;—&nbsp;À&nbsp;DÉFINIR
-            </span>
+            <Link to="/mentions-legales" data-testid="footer-link-legal" className="hover:text-black transition-colors">MENTIONS&nbsp;LÉGALES</Link>
+            <Link to="/cgv" className="hover:text-black transition-colors">CGV</Link>
+            <Link to="/confidentialite" className="hover:text-black transition-colors">CONFIDENTIALITÉ</Link>
+            <Link to="/cookies" className="hover:text-black transition-colors">COOKIES</Link>
+            <Link to="/retractation" className="hover:text-black transition-colors">RÉTRACTATION</Link>
+            <Link to="/garanties" className="hover:text-black transition-colors">GARANTIES</Link>
+            <Link to="/mediation" className="hover:text-black transition-colors">MÉDIATION</Link>
           </div>
         </div>
       </div>

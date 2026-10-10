@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Minus, Plus, Trash2, Lock } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { PRODUCTS, priceLabel } from "@/data/products";
+import { PRODUCTS, priceLabel, shippingCost, eurLabel, SHIPPING_RULES_LABEL } from "@/data/products";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -36,9 +36,11 @@ export default function Checkout() {
     if (price && typeof price === "object" && price.amount !== undefined) total += Number(price.amount) * item.qty;
     else allPriced = false;
   }
-  const totalLabel = allPriced
-    ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", minimumFractionDigits: total % 1 === 0 ? 0 : 2 }).format(total)
-    : "Prix à définir";
+  const subtotalLabel = allPriced ? eurLabel(total) : "Prix à définir";
+  const shipping = allPriced ? shippingCost(total) : null;
+  const shippingLabel =
+    shipping === null ? SHIPPING_RULES_LABEL : shipping === 0 ? "Offerte" : eurLabel(shipping);
+  const totalLabel = allPriced ? eurLabel(total + shipping) : "Prix à définir";
 
   const onPay = () => {
     toast("Le paiement sera disponible à la connexion de Shopify.");
@@ -168,8 +170,14 @@ export default function Checkout() {
                 Délai estimé : 7 à 12 jours
               </p>
             </div>
-            <p className="font-tech text-[10px] tracking-[0.2em] text-black/50">Frais : à définir</p>
+            <p className="font-tech text-[10px] tracking-[0.15em] text-black font-bold" data-testid="checkout-shipping-fee">
+              {shippingLabel}
+            </p>
           </div>
+          <p className="font-tech text-[9px] tracking-[0.15em] text-black/40 leading-relaxed">
+            Barème : 5 € (moins de 50 €) · 2,50 € (50 à 99,99 €) · offerte dès 100 € —
+            calculé sur le sous-total des produits après réductions éventuelles.
+          </p>
           <div className="flex items-center justify-between border border-black/10 rounded-2xl p-5 opacity-50">
             <div>
               <p className="font-display text-xs font-bold text-black">LIVRAISON EXPRESS</p>
@@ -259,11 +267,11 @@ export default function Checkout() {
           <div className="mt-8 border-t border-black/10 pt-6 flex flex-col gap-2 font-tech text-[11px] tracking-[0.2em] text-black/60">
             <div className="flex justify-between" data-testid="checkout-subtotal">
               <span>SOUS-TOTAL</span>
-              <span>{totalLabel}</span>
+              <span>{subtotalLabel}</span>
             </div>
             <div className="flex justify-between" data-testid="checkout-shipping">
               <span>LIVRAISON</span>
-              <span>À définir</span>
+              <span>{shippingLabel}</span>
             </div>
             <div className="flex justify-between font-bold text-black text-sm pt-3 border-t border-black/10" data-testid="checkout-total">
               <span>TOTAL</span>

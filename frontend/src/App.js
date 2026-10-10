@@ -16,6 +16,7 @@ import CategoryPage from "@/pages/Categories";
 import Compte from "@/pages/Compte";
 import Checkout from "@/pages/Checkout";
 import { Livraison, Retours, APropos, Faq, Contact } from "@/pages/Pages";
+import { MentionsLegales, CGV, Confidentialite, Cookies, Retractation, Garanties, Mediation } from "@/pages/Legal";
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -73,6 +74,13 @@ function PageTransition() {
         <Route path="/a-propos" element={<APropos />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
+        <Route path="/cgv" element={<CGV />} />
+        <Route path="/confidentialite" element={<Confidentialite />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="/retractation" element={<Retractation />} />
+        <Route path="/garanties" element={<Garanties />} />
+        <Route path="/mediation" element={<Mediation />} />
         <Route path="*" element={<Home />} />
       </Routes>
       <Footer />

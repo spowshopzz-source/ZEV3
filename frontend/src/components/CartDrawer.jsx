@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { X, Trash2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
-import { PRODUCTS, priceLabel } from "@/data/products";
+import { PRODUCTS, priceLabel, shippingCost, eurLabel, SHIPPING_RULES_LABEL } from "@/data/products";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -28,13 +28,10 @@ export default function CartDrawer() {
       allPriced = false;
     }
   }
-  const totalLabel = allPriced
-    ? new Intl.NumberFormat("fr-FR", {
-        style: "currency",
-        currency: "EUR",
-        minimumFractionDigits: total % 1 === 0 ? 0 : 2,
-      }).format(total)
-    : "Prix à définir";
+  const shipping = allPriced ? shippingCost(total) : null;
+  const shippingLabel =
+    shipping === null ? SHIPPING_RULES_LABEL : shipping === 0 ? "Offerte" : eurLabel(shipping);
+  const totalLabel = allPriced ? eurLabel(total + shipping) : "Prix à définir";
 
   const onCheckout = () => {
     toast("PAIEMENT DISPONIBLE À LA CONNEXION DE SHOPIFY");
@@ -169,6 +166,20 @@ export default function CartDrawer() {
 
             {items.length > 0 && (
               <div className="px-6 py-6 border-t border-black/10">
+                <div
+                  className="flex items-center justify-between mb-2"
+                  data-testid="cart-shipping-row"
+                >
+                  <p className="font-tech text-[10px] tracking-[0.35em] text-black/45">
+                    LIVRAISON
+                  </p>
+                  <p
+                    className="font-tech text-[10px] tracking-[0.15em] text-black/70"
+                    data-testid="cart-shipping"
+                  >
+                    {shippingLabel}
+                  </p>
+                </div>
                 <div
                   className="flex items-center justify-between mb-4"
                   data-testid="cart-total-row"
