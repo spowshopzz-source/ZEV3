@@ -5,6 +5,11 @@ import burgundy from "../assets/sneaker-burgundy.png";
 import asicsA from "../assets/asics-a.png";
 import asicsB from "../assets/asics-b.png";
 import asicsC from "../assets/asics-c.png";
+import sauconyNoir from "../assets/saucony-noir.png";
+import sauconyBlanc from "../assets/saucony-blanc.png";
+import sauconyGris from "../assets/saucony-gris.png";
+import sauconyBleu from "../assets/saucony-bleu.png";
+import sauconyBordeaux from "../assets/saucony-bordeaux.png";
 
 /*
  * ZEV SHOP — Shopify-shaped product schema.
@@ -199,9 +204,119 @@ export const CATALOG = [
       },
     ],
   },
+  {
+    handle: "saucony-progrid-omni-9",
+    title: "SAUCONY PROGRID OMNI 9",
+    vendor: "ZEV SHOP",
+    brand: "Saucony",
+    productType: "SNEAKERS",
+    description: "Saucony ProGrid Omni 9 — sneaker ZEV SHOP, cinq coloris.",
+    availableForSale: true,
+    currencyCode: null, // set when Shopify connects
+    priceRange: { min: null, max: null }, // set when Shopify connects
+    options: [{ name: "Color", values: ["Noir", "Blanc", "Gris / Argent", "Blanc / Bleu", "Blanc / Bordeaux"] }],
+    // Ombres déjà intégrées aux visuels fournis → shadowTint transparent (pas
+    // de seconde ombre artificielle) ; pas de grand Z derrière les Saucony
+    // (zTint transparent) — fond neutre, personnalisable plus tard.
+    variants: [
+      {
+        id: "saucony-noir",
+        title: "SAUCONY PROGRID OMNI 9 — NOIR",
+        selectedOptions: { Color: "Noir" },
+        image: sauconyNoir,
+        price: null, // DÉFINI VIA SHOPIFY
+        oldPrice: null,
+        discountPercent: null,
+        available: true,
+        swatch: "#141414",
+        swatchFlat: "#141414",
+        glow: "rgba(0, 0, 0, 0)",
+        spotlight: "rgba(0, 0, 0, 0.05)",
+        shadowTint: "rgba(0, 0, 0, 0)",
+        zTint: "rgba(0, 0, 0, 0)",
+        scale: 1.0,
+        shiftY: "0%",
+        gallery: gallery(sauconyNoir),
+      },
+      {
+        id: "saucony-blanc",
+        title: "SAUCONY PROGRID OMNI 9 — BLANC",
+        selectedOptions: { Color: "Blanc" },
+        image: sauconyBlanc,
+        price: null,
+        oldPrice: null,
+        discountPercent: null,
+        available: true,
+        swatch: "radial-gradient(circle at 35% 35%, #FFFFFF, #D8DEE6)",
+        swatchFlat: "#F4F4F4",
+        glow: "rgba(0, 0, 0, 0)",
+        spotlight: "rgba(0, 0, 0, 0.04)",
+        shadowTint: "rgba(0, 0, 0, 0)",
+        zTint: "rgba(0, 0, 0, 0)",
+        scale: 1.0,
+        shiftY: "0%",
+        gallery: gallery(sauconyBlanc),
+      },
+      {
+        id: "saucony-gris",
+        title: "SAUCONY PROGRID OMNI 9 — GRIS / ARGENT",
+        selectedOptions: { Color: "Gris / Argent" },
+        image: sauconyGris,
+        price: null,
+        oldPrice: null,
+        discountPercent: null,
+        available: true,
+        swatch: "linear-gradient(160deg, #ECECEC 45%, #9AA0A6 100%)",
+        swatchFlat: "linear-gradient(135deg, #ECECEC, #9AA0A6)",
+        glow: "rgba(0, 0, 0, 0)",
+        spotlight: "rgba(0, 0, 0, 0.05)",
+        shadowTint: "rgba(0, 0, 0, 0)",
+        zTint: "rgba(0, 0, 0, 0)",
+        scale: 1.0,
+        shiftY: "0%",
+        gallery: gallery(sauconyGris),
+      },
+      {
+        id: "saucony-bleu",
+        title: "SAUCONY PROGRID OMNI 9 — BLANC / BLEU",
+        selectedOptions: { Color: "Blanc / Bleu" },
+        image: sauconyBleu,
+        price: null,
+        oldPrice: null,
+        discountPercent: null,
+        available: true,
+        swatch: "linear-gradient(160deg, #F4F4F4 45%, #5FA8D3 100%)",
+        swatchFlat: "linear-gradient(135deg, #F4F4F4, #5FA8D3)",
+        glow: "rgba(0, 0, 0, 0)",
+        spotlight: "rgba(0, 0, 0, 0.05)",
+        shadowTint: "rgba(0, 0, 0, 0)",
+        zTint: "rgba(0, 0, 0, 0)",
+        scale: 1.0,
+        shiftY: "0%",
+        gallery: gallery(sauconyBleu),
+      },
+      {
+        id: "saucony-bordeaux",
+        title: "SAUCONY PROGRID OMNI 9 — BLANC / BORDEAUX",
+        selectedOptions: { Color: "Blanc / Bordeaux" },
+        image: sauconyBordeaux,
+        price: null,
+        oldPrice: null,
+        discountPercent: null,
+        available: true,
+        swatch: "linear-gradient(160deg, #F4F4F4 45%, #7A1E2B 100%)",
+        swatchFlat: "linear-gradient(135deg, #F4F4F4, #7A1E2B)",
+        glow: "rgba(0, 0, 0, 0)",
+        spotlight: "rgba(0, 0, 0, 0.05)",
+        shadowTint: "rgba(0, 0, 0, 0)",
+        zTint: "rgba(0, 0, 0, 0)",
+        scale: 1.0,
+        shiftY: "0%",
+        gallery: gallery(sauconyBordeaux),
+      },
+    ],
+  },
 ];
-
-/* Produit TN — shape de référence pour l'adaptateur Shopify (shopifyAdapter.js). */
 export const PRODUCT = CATALOG.find((p) => p.handle === "tn-sneaker");
 
 /* Flat variant list used across pages — with UI aliases (name/index). */
