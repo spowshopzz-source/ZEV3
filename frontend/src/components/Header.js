@@ -5,7 +5,7 @@ import { ShoppingBag, Menu, X, ChevronDown, Search, User, Globe } from "lucide-r
 import LogoMark from "@/components/LogoMark";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { PRODUCTS } from "@/data/products";
+import { PRODUCTS, GROUPED_PRODUCTS } from "@/data/products";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -106,7 +106,15 @@ function MiniSelect({ icon: Icon, value, options, testid, light = false }) {
 function SearchOverlay({ open, onClose }) {
   const [q, setQ] = useState("");
   const navigate = useNavigate();
-  const results = PRODUCTS.filter((p) => p.name.toLowerCase().includes(q.toLowerCase()));
+  // Recherche simple : nom, modèle, marque et type déjà présents dans les données
+  const terms = q.toLowerCase().trim();
+  const results = PRODUCTS.filter((p) => {
+    if (terms === "") return true;
+    const brand = GROUPED_PRODUCTS.find((g) => g.handle === p.productHandle)?.brand;
+    return [p.name, p.productTitle, brand, p.productType]
+      .filter(Boolean)
+      .some((f) => f.toLowerCase().includes(terms));
+  });
 
   useEffect(() => {
     if (!open) setQ("");
@@ -164,11 +172,11 @@ function SearchOverlay({ open, onClose }) {
                   data-testid={`search-result-${p.id}`}
                   className="flex items-center gap-4 p-3 text-left hover:bg-black/[0.03] rounded-xl transition-colors cursor-pointer"
                 >
-                  <img src={p.image} alt={p.name} className="w-16 h-11 object-contain" />
+                  <img src={p.image} alt={p.name} loading="lazy" decoding="async" className="w-16 h-11 object-contain" />
                   <div>
                     <p className="font-display text-xs font-bold text-black">{p.name}</p>
                     <p className="font-tech text-[9px] tracking-[0.25em] text-black/40 mt-1">
-                      SNEAKERS&nbsp;—&nbsp;TN
+                      {p.productType}&nbsp;—&nbsp;{p.productTitle}
                     </p>
                   </div>
                 </button>
@@ -439,6 +447,26 @@ export default function Header() {
               >
                 SUIVI&nbsp;DE&nbsp;COMMANDE
               </Link>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); setSearchOpen(true); }}
+                  data-testid="mobile-menu-search"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-black/15 font-tech text-[11px] tracking-[0.15em] text-black/70 hover:border-black/40 transition-colors cursor-pointer"
+                >
+                  <Search className="w-4 h-4" />
+                  RECHERCHE
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); setOpen(true); }}
+                  data-testid="mobile-menu-cart"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-black/15 font-tech text-[11px] tracking-[0.15em] text-black/70 hover:border-black/40 transition-colors cursor-pointer"
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  PANIER{count > 0 ? ` (${count})` : ""}
+                </button>
+              </div>
               <div className="flex items-center gap-5 font-tech text-[11px] tracking-[0.2em] text-black/50">
                 <span>FR</span>
                 <span>EUR</span>
