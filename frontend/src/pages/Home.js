@@ -6,7 +6,9 @@ import { api } from "@/api";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import LogoMark from "@/components/LogoMark";
-import introStorefront from "@/assets/intro-storefront.webp";
+import introCampaign from "@/assets/intro-campaign.jpg";
+import introExtLeft from "@/assets/intro-ext-left.jpg";
+import introExtRight from "@/assets/intro-ext-right.jpg";
 import ProductCard from "@/components/ProductCard";
 import Marquee from "@/components/Marquee";
 import { PRODUCTS, GROUPED_PRODUCTS } from "@/data/products";
@@ -31,15 +33,41 @@ function Intro() {
       className="relative h-[100svh] w-full overflow-hidden bg-[#220407]"
       data-testid="intro-section"
     >
-      {/* façade ZEV SHOP — plein cadre responsive : cover desktop, cadrage
-          haut-centre sur mobile pour garder l'enseigne et les vitrines visibles.
-          Chargée en priorité (première image visible à l'ouverture). */}
+      {/* extensions latérales — fond de la photo prolongé (miroir fondu), invisibles
+          à la jonction ; largeur variable continue, disparaissent sur les formats verticaux */}
+      <div
+        className="absolute left-0 top-0 h-full w-[max(0px,calc((100%-56.25svh)/2))] overflow-hidden"
+        aria-hidden="true"
+        data-testid="intro-ext-left"
+      >
+        <img
+          src={introExtLeft}
+          alt=""
+          draggable="false"
+          className="absolute right-0 top-0 h-full w-auto max-w-none select-none pointer-events-none"
+        />
+      </div>
+      <div
+        className="absolute right-0 top-0 h-full w-[max(0px,calc((100%-56.25svh)/2))] overflow-hidden"
+        aria-hidden="true"
+        data-testid="intro-ext-right"
+      >
+        <img
+          src={introExtRight}
+          alt=""
+          draggable="false"
+          className="absolute left-0 top-0 h-full w-auto max-w-none select-none pointer-events-none"
+        />
+      </div>
+
+      {/* photo plein cadre — hauteur 100%, cadrage focus personnage (recadrage
+          latéral automatique sur les formats verticaux). La marque est assurée
+          par le header transparent au-dessus de l'image — aucun texte ajouté. */}
       <img
-        src={introStorefront}
-        alt="ZEV SHOP — façade de la boutique"
+        src={introCampaign}
+        alt="ZEV SHOP — campagne éditoriale"
         draggable="false"
-        fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover object-[50%_38%] max-sm:object-[60%_32%] select-none"
+        className="absolute left-1/2 top-0 h-full w-auto max-w-none -translate-x-1/2 select-none"
         data-testid="intro-campaign"
       />
 
