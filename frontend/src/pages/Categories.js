@@ -1,6 +1,8 @@
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import ProductCard from "@/components/ProductCard";
+import ProductFilters, { applyProductFilters } from "@/components/ProductFilters";
 import { GROUPED_PRODUCTS } from "@/data/products";
 import { VETEMENTS, ACCESSOIRES } from "@/components/Header";
 
@@ -14,6 +16,22 @@ export default function CategoryPage() {
   const { slug } = useParams();
   const title = (TITLES[slug] || slug).toUpperCase();
   const isChaussures = slug === "chaussures";
+  const [filters, setFilters] = useState({ brands: [], avail: false, sort: "pertinence" });
+
+  // Produits de la catégorie visitée uniquement — les options de filtres
+  // (marques) sont dérivées de cette liste, rien n'est inventé.
+  const categoryGroups = useMemo(
+    () => (isChaussures ? GROUPED_PRODUCTS.filter((g) => g.productType === "SNEAKERS") : []),
+    [isChaussures],
+  );
+  const brands = useMemo(
+    () => Array.from(new Set(categoryGroups.map((g) => g.brand).filter(Boolean))).sort(),
+    [categoryGroups],
+  );
+  const groups = useMemo(
+    () => applyProductFilters(categoryGroups, filters),
+    [categoryGroups, filters],
+  );
 
   return (
     <div className="min-h-screen">
@@ -51,19 +69,41 @@ export default function CategoryPage() {
       </div>
 
       <div className="px-6 sm:px-10 max-w-[1100px] mx-auto pb-24">
-        {isChaussures ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-12" data-testid="category-grid">
-            {GROUPED_PRODUCTS.filter((g) => g.productType === "SNEAKERS").map((g, i) => (
-              <motion.div
-                key={g.handle}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.2 + i * 0.08, ease: EASE }}
-              >
-                <ProductCard group={g} />
-              </motion.div>
-            ))}
-          </div>
+        {categoryGroups.length > 0 ? (
+          <>
+            <ProductFilters
+              brands={brands}
+              value={filters}
+              onChange={setFilters}
+              hasProducts={groups.length > 0}
+            />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-12" data-testid="category-grid">
+              {groups.map((g, i) => (
+                <motion.div
+                  key={g.handle}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.9, delay: 0.2 + i * 0.08, ease: EASE }}
+                >
+                  <ProductCard group={g} />
+                </motion.div>
+              ))}
+            </div>
+            {groups.length === 0 && (
+              <div className="mt-16 border border-dashed border-black/15 rounded-3xl py-20 px-8 text-center" data-testid="category-no-result">
+                <p className="font-tech text-[11px] tracking-[0.25em] text-black/45">
+                  Aucun produit ne correspond aux filtres actuellement sélectionnés.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setFilters({ brands: [], avail: false, sort: "pertinence" })}
+                  className="mt-8 font-tech text-[10px] font-semibold tracking-[0.2em] text-[#8E1721] border-b border-[#8E1721] pb-1 hover:opacity-70 transition-opacity cursor-pointer"
+                >
+                  RÉINITIALISER&nbsp;LES&nbsp;FILTRES
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 24 }}
