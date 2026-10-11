@@ -9,8 +9,9 @@ import {
   useTransform,
 } from "framer-motion";
 import { toast } from "sonner";
-import { Images, Heart, Share2, X } from "lucide-react";
-import { PRODUCTS, SIZES, priceLabel } from "@/data/products";
+import { Images, Heart, Share2, X, Truck, RotateCcw } from "lucide-react";
+import { PRODUCTS, CATALOG, GROUPED_PRODUCTS, SIZES, priceLabel, findGroup } from "@/data/products";
+import ProductCard from "@/components/ProductCard";
 import ProductStage from "@/components/ProductStage";
 import ProductGallery from "@/components/ProductGallery";
 import ColorSelectors from "@/components/ColorSelectors";
@@ -21,6 +22,43 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 
 const EASE = [0.65, 0, 0.35, 1];
+
+/* VOUS AIMEREZ AUSSI — recommandations automatiques issues du catalogue réel :
+   même catégorie d'abord, même marque privilégiée, produit courant exclu,
+   une seule carte par modèle (les coloris restent dans la carte). Fonctionne
+   pour tous les visiteurs, connectés ou non. */
+function SimilarProducts({ current }) {
+  const group = findGroup(current.id);
+  const list = GROUPED_PRODUCTS.filter((g) => g.handle !== current.productHandle)
+    .map((g) => ({
+      g,
+      s:
+        (g.productType === (group && group.productType) ? 2 : 0) +
+        (group && group.brand && g.brand === group.brand ? 3 : 0),
+    }))
+    .sort((a, b) => b.s - a.s)
+    .map((x) => x.g)
+    .filter((g) => g.variants.some((v) => v.available))
+    .slice(0, 4);
+  if (list.length === 0) return null;
+  return (
+    <section className="relative z-20 bg-white border-t border-black/10" data-testid="similar-products">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-16">
+        <p className="font-tech text-[10px] tracking-[0.45em] text-black/45">
+          SÉLECTION&nbsp;AUTOMATIQUE
+        </p>
+        <h2 className="font-display font-extrabold uppercase text-2xl sm:text-4xl mt-3 text-black">
+          Vous aimerez aussi
+        </h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mt-10">
+          {list.map((g) => (
+            <ProductCard key={g.handle} group={g} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function SizeGuide({ open, onClose }) {
   return (
@@ -156,90 +194,88 @@ export default function Product() {
 
   return (
     <main className="relative bg-white" data-testid="product-page" onMouseMove={onMouseMove}>
-      {/* ---------- scène immersive (100svh) ---------- */}
-      <div className="relative h-[100svh] overflow-hidden">
-        {/* teinte ambiante neutre, fondu au changement */}
-        <AnimatePresence>
-          <motion.div
-            key={p.id}
-            aria-hidden="true"
-            className="absolute inset-0 z-0 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            style={{
-              background: `radial-gradient(65% 55% at 50% 52%, ${p.spotlight} 0%, transparent 100%)`,
-            }}
-          />
-        </AnimatePresence>
-
-        {/* Z logo watermark — conteneur fixe parfaitement centré, indépendant
-            de la sneaker ; la couleur change progressivement */}
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <motion.div animate={zControls}>
-              <motion.div
-                className={`${p.watermark ? "" : "z-watermark"} w-[64vmin] h-[64vmin]`}
-                initial={false}
-                animate={{ backgroundColor: p.zTint }}
-                transition={{ duration: 0.8, ease: EASE }}
-                data-testid="z-watermark"
-                style={
-                  p.watermark
-                    ? {
-                        WebkitMaskImage: `url(${p.watermark})`,
-                        maskImage: `url(${p.watermark})`,
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                      }
-                    : undefined
-                }
-              />
-            </motion.div>
-          </div>
-        </div>
-
-        {/* breadcrumb */}
-        <motion.p
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
-          className="absolute z-30 top-[7.5rem] left-6 sm:left-10 font-tech text-[10px] tracking-[0.4em] text-black/40"
+      {/* ---------- fiche 2 zones : scène (gauche) + informations (droite) ---------- */}
+      <div className="relative lg:grid lg:grid-cols-2">
+        {/* ZONE GAUCHE — visuel : lévitation, logo de marque en fond, transitions coloris */}
+        <div
+          className="relative h-[64svh] lg:h-[100svh] lg:sticky lg:top-0 overflow-hidden"
+          data-testid="product-scene"
         >
-          <Link to="/catalogue" className="hover:text-black transition-colors">
-            CATALOGUE
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-black/70">{p.title}</span>
-        </motion.p>
+          {/* teinte ambiante neutre, fondu au changement */}
+          <AnimatePresence>
+            <motion.div
+              key={p.id}
+              aria-hidden="true"
+              className="absolute inset-0 z-0 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              style={{
+                background: `radial-gradient(65% 55% at 50% 52%, ${p.spotlight} 0%, transparent 100%)`,
+              }}
+            />
+          </AnimatePresence>
 
-        {/* scène carrousel — uniquement les variantes du même produit */}
-        <ProductStage products={siblings} active={activeIdx} shoeX={shoeX} shoeY={shoeY} />
+          {/* logo de marque en filigrane — conteneur fixe centré ; la couleur
+              change progressivement selon le coloris */}
+          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <motion.div animate={zControls}>
+                <motion.div
+                  className={`${p.watermark ? "" : "z-watermark"} w-[64vmin] h-[64vmin]`}
+                  initial={false}
+                  animate={{ backgroundColor: p.zTint }}
+                  transition={{ duration: 0.8, ease: EASE }}
+                  data-testid="z-watermark"
+                  style={
+                    p.watermark
+                      ? {
+                          WebkitMaskImage: `url(${p.watermark})`,
+                          maskImage: `url(${p.watermark})`,
+                          WebkitMaskSize: "contain",
+                          maskSize: "contain",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskPosition: "center",
+                          maskPosition: "center",
+                        }
+                      : undefined
+                  }
+                />
+              </motion.div>
+            </div>
+          </div>
 
-        {/* identité + actions secondaires — desktop (mobile : panneau bas) */}
-        <div className="hidden sm:block absolute z-30 left-10 top-[58%] max-w-[240px]">
-          <motion.div
-            key={p.id}
-            initial={{ opacity: 0, x: -18 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.9, delay: 0.25, ease: EASE }}
+          {/* breadcrumb */}
+          <motion.p
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
+            className="absolute z-30 top-[7.5rem] left-6 sm:left-10 font-tech text-[10px] tracking-[0.4em] text-black/40"
           >
-            <h1
-              className="font-display text-lg sm:text-2xl font-bold text-black leading-snug"
-              data-testid="product-variant-name"
-            >
-              {p.name}
-            </h1>
+            <Link to="/catalogue" className="hover:text-black transition-colors">
+              CATALOGUE
+            </Link>
+            <span className="mx-2">/</span>
+            <span className="text-black/70">{p.title}</span>
+          </motion.p>
+
+          {/* scène carrousel — uniquement les variantes du même produit */}
+          <ProductStage products={siblings} active={activeIdx} shoeX={shoeX} shoeY={shoeY} />
+
+          {/* Plus de photos — bas gauche de la scène */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
+            className="absolute z-30 left-6 sm:left-10 bottom-6"
+          >
             <button
               type="button"
               onClick={() => setGalleryOpen(true)}
               data-testid="gallery-open-button"
-              className="inline-flex items-center gap-2 mt-5 font-tech text-[10px] tracking-[0.3em] text-black/70 border border-black/20 rounded-full px-5 py-2.5 hover:border-black hover:text-black transition-colors duration-300 cursor-pointer"
+              className="inline-flex items-center gap-2 font-tech text-[10px] tracking-[0.3em] text-black/70 bg-white/70 backdrop-blur-sm border border-black/20 rounded-full px-5 py-2.5 hover:border-black hover:text-black transition-colors duration-300 cursor-pointer"
             >
               <Images className="w-3.5 h-3.5" />
               Plus de photos
@@ -247,252 +283,187 @@ export default function Product() {
           </motion.div>
         </div>
 
-        {/* tailles — colonne droite (desktop) / panneau bas (mobile) */}
-        <div className="hidden sm:block absolute z-30 sm:right-10 sm:top-[42%]">
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.45, ease: EASE }}
-          >
-            <div className="flex items-center justify-between sm:justify-end gap-4 mb-3">
-              <p className="font-tech text-[10px] tracking-[0.4em] text-black/40">TAILLE</p>
-              <button
-                type="button"
-                onClick={() => setGuideOpen(true)}
-                data-testid="size-guide-open"
-                className="font-tech text-[9px] tracking-[0.25em] text-black/45 underline underline-offset-4 hover:text-black cursor-pointer"
-              >
-                Guide des tailles
-              </button>
-            </div>
-            <div className="flex sm:flex-col flex-nowrap gap-1.5 sm:gap-2 sm:items-end">
-              {SIZES.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setSize(s)}
-                  data-testid={`size-chip-${s}`}
-                  className={`shrink-0 sm:shrink w-10 h-9 sm:w-12 sm:h-10 font-tech text-[10px] sm:text-[11px] tracking-[0.1em] border transition-all duration-300 cursor-pointer ${
-                    size === s
-                      ? "border-black bg-black text-white"
-                      : "border-black/20 text-black/60 hover:border-black/60 hover:text-black"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* prix + disponibilité — desktop (mobile : panneau bas) */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.55, ease: EASE }}
-          className="hidden sm:block absolute z-30 left-10 bottom-9"
-        >
-          <div className="flex items-baseline gap-3">
-            <p
-              className="font-display font-bold text-base sm:text-2xl text-black"
-              data-testid="product-price"
-            >
-              {priceLabel(p)}
-            </p>
-            {p.oldPrice && (
-              <p className="font-tech text-[11px] text-black/40 line-through" data-testid="product-old-price">
-                {priceLabel(p.oldPrice)}
-              </p>
-            )}
-            {p.discountPercent && (
-              <p className="font-tech text-[10px] text-black bg-black/[0.06] rounded-full px-2.5 py-1" data-testid="product-discount">
-                -{p.discountPercent}%
-              </p>
-            )}
-          </div>
-          <p
-            className={`flex items-center gap-2 font-tech text-[10px] tracking-[0.3em] mt-2 ${
-              p.available ? "text-black/60" : "text-black/35"
-            }`}
-          >
-            {p.available ? (
-              <>
-                <span className="relative flex w-2 h-2">
-                  <span className="absolute inline-flex w-full h-full rounded-full bg-black/30 opacity-60 animate-ping" />
-                  <span className="relative inline-flex w-2 h-2 rounded-full bg-black" />
-                </span>
-                EN&nbsp;STOCK
-              </>
-            ) : (
-              <>ÉPUISÉ</>
-            )}
-          </p>
-        </motion.div>
-
-        {/* actions principales — desktop (mobile : panneau bas) */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.65, ease: EASE }}
-          className="hidden sm:flex absolute z-30 sm:right-10 sm:bottom-28 items-center gap-3"
-        >
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onWish}
-              data-testid="wishlist-button"
-              aria-label="Ajouter à la wishlist"
-              className="shrink-0 flex items-center justify-center w-12 h-12 rounded-full border border-black/20 hover:border-black transition-colors cursor-pointer"
-            >
-              <Heart className={`w-4.5 h-4.5 ${wished ? "fill-black text-black" : "text-black/60"}`} />
-            </button>
-            <button
-              type="button"
-              onClick={onShare}
-              data-testid="share-button"
-              aria-label="Partager"
-              className="shrink-0 flex items-center justify-center w-12 h-12 rounded-full border border-black/20 hover:border-black transition-colors cursor-pointer"
-            >
-              <Share2 className="w-4 h-4 text-black/60" />
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={onAdd}
-            data-testid="add-to-cart-button"
-            className="flex-1 font-tech text-[12px] tracking-[0.2em] text-white bg-black rounded-full px-8 py-3.5 hover:bg-black/85 transition-colors duration-300 cursor-pointer"
-          >
-            Ajouter au panier
-          </button>
-        </motion.div>
-
-        {/* sélecteurs de coloris — variantes du même produit uniquement (desktop) */}
-        <div className="hidden sm:block">
-          <ColorSelectors products={siblings} active={activeIdx} />
-        </div>
-
-        {/* ---------- panneau d'achat mobile — flux empilé ---------- */}
+        {/* ZONE DROITE — informations d'achat, regroupées et ordonnées */}
         <div
-          className="sm:hidden absolute z-30 inset-x-0 bottom-0 bg-white/90 backdrop-blur-md border-t border-black/10 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-3"
-          data-testid="mobile-buy-panel"
+          className="relative z-20 bg-white px-6 sm:px-10 lg:px-14 pt-10 lg:pt-44 pb-16"
+          data-testid="product-info"
         >
-          <h1
-            className="font-display text-lg font-bold text-black leading-snug"
-            data-testid="product-variant-name-mobile"
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
+            className="max-w-md flex flex-col gap-7"
           >
-            {p.name}
-          </h1>
-          <div className="flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setGalleryOpen(true)}
-              data-testid="gallery-open-button-mobile"
-              className="inline-flex items-center gap-2 font-tech text-[10px] tracking-[0.25em] text-black/70 border border-black/20 rounded-full px-4 py-2 hover:border-black hover:text-black transition-colors duration-300 cursor-pointer"
-            >
-              <Images className="w-3.5 h-3.5" />
-              Plus de photos
-            </button>
-            <ColorSelectors products={siblings} active={activeIdx} idPrefix="mobile-" />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <p className="font-tech text-[10px] tracking-[0.4em] text-black/40">TAILLE</p>
+            {/* marque + modèle */}
+            <div>
+              <p className="font-tech text-[10px] tracking-[0.45em] text-black/45" data-testid="product-brand">
+                {(findGroup(p.id) && findGroup(p.id).brand ? findGroup(p.id).brand : p.productType).toUpperCase()}
+              </p>
+              <h1
+                className="font-display text-2xl sm:text-3xl font-bold text-black leading-snug mt-3"
+                data-testid="product-variant-name"
+              >
+                {p.name}
+              </h1>
+            </div>
+
+            {/* prix + disponibilité */}
+            <div>
+              <div className="flex items-baseline gap-3">
+                <p className="font-display font-bold text-xl sm:text-2xl text-black" data-testid="product-price">
+                  {priceLabel(p)}
+                </p>
+                {p.oldPrice && (
+                  <p className="font-tech text-[11px] text-black/40 line-through" data-testid="product-old-price">
+                    {priceLabel(p.oldPrice)}
+                  </p>
+                )}
+                {p.discountPercent && (
+                  <p className="font-tech text-[10px] text-black bg-black/[0.06] rounded-full px-2.5 py-1" data-testid="product-discount">
+                    -{p.discountPercent}%
+                  </p>
+                )}
+              </div>
+              <p
+                className={`flex items-center gap-2 font-tech text-[10px] tracking-[0.3em] mt-2.5 ${
+                  p.available ? "text-black/60" : "text-black/35"
+                }`}
+              >
+                {p.available ? (
+                  <>
+                    <span className="relative flex w-2 h-2">
+                      <span className="absolute inline-flex w-full h-full rounded-full bg-black/30 opacity-60 animate-ping" />
+                      <span className="relative inline-flex w-2 h-2 rounded-full bg-black" />
+                    </span>
+                    EN&nbsp;STOCK
+                  </>
+                ) : (
+                  <>ÉPUISÉ</>
+                )}
+              </p>
+            </div>
+
+            {/* coloris */}
+            <div className="border-t border-black/10 pt-7">
+              <p className="font-tech text-[10px] tracking-[0.4em] text-black/40">
+                COLORIS&nbsp;—&nbsp;<span className="text-black/70">{p.selectedOptions.Color.toUpperCase()}</span>
+              </p>
+              <div className="mt-4">
+                <ColorSelectors products={siblings} active={activeIdx} idPrefix="info-" />
+              </div>
+            </div>
+
+            {/* tailles */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-tech text-[10px] tracking-[0.4em] text-black/40">TAILLE</p>
+                <button
+                  type="button"
+                  onClick={() => setGuideOpen(true)}
+                  data-testid="size-guide-open"
+                  className="font-tech text-[9px] tracking-[0.25em] text-black/45 underline underline-offset-4 hover:text-black cursor-pointer"
+                >
+                  Guide des tailles
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {SIZES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setSize(s)}
+                    data-testid={`size-chip-${s}`}
+                    className={`w-11 h-11 font-tech text-[11px] tracking-[0.1em] border transition-all duration-300 cursor-pointer ${
+                      size === s
+                        ? "border-black bg-black text-white"
+                        : "border-black/20 text-black/60 hover:border-black/60 hover:text-black"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* actions principales */}
+            <div className="flex gap-2.5">
               <button
                 type="button"
-                onClick={() => setGuideOpen(true)}
-                data-testid="size-guide-open-mobile"
-                className="font-tech text-[9px] tracking-[0.25em] text-black/45 underline underline-offset-4 hover:text-black cursor-pointer"
+                onClick={onAdd}
+                data-testid="add-to-cart-button"
+                className="flex-1 font-tech text-[12px] tracking-[0.2em] text-white bg-black rounded-full px-6 py-4 hover:bg-black/85 active:scale-[0.98] transition-all duration-200 cursor-pointer"
               >
-                Guide des tailles
+                Ajouter au panier
+              </button>
+              <button
+                type="button"
+                onClick={onWish}
+                data-testid="wishlist-button"
+                aria-label="Ajouter à la wishlist"
+                className="shrink-0 flex items-center justify-center w-12 h-12 rounded-full border border-black/20 hover:border-black transition-colors cursor-pointer"
+              >
+                <Heart className={`w-4 h-4 ${wished ? "fill-black text-black" : "text-black/60"}`} />
+              </button>
+              <button
+                type="button"
+                onClick={onShare}
+                data-testid="share-button"
+                aria-label="Partager"
+                className="shrink-0 flex items-center justify-center w-12 h-12 rounded-full border border-black/20 hover:border-black transition-colors cursor-pointer"
+              >
+                <Share2 className="w-4 h-4 text-black/60" />
               </button>
             </div>
-            <div className="flex flex-nowrap gap-1.5">
-              {SIZES.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setSize(s)}
-                  data-testid={`size-chip-mobile-${s}`}
-                  className={`shrink-0 w-10 h-9 font-tech text-[10px] tracking-[0.1em] border transition-all duration-300 cursor-pointer ${
-                    size === s
-                      ? "border-black bg-black text-white"
-                      : "border-black/20 text-black/60 hover:border-black/60 hover:text-black"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+
+            {/* livraison + retours — informations réelles du site */}
+            <div className="border-t border-black/10 pt-6 flex flex-col gap-3.5">
+              <p className="flex items-start gap-3 font-tech text-[10px] tracking-[0.15em] leading-relaxed text-black/60">
+                <Truck className="w-4 h-4 shrink-0 mt-px text-black/50" strokeWidth={1.6} />
+                <span>
+                  Livraison standard estimée : 7 à 12 jours — offerte dès 100&nbsp;€.{" "}
+                  <Link to="/livraison" className="underline underline-offset-4 hover:text-black">
+                    Détails
+                  </Link>
+                </span>
+              </p>
+              <p className="flex items-start gap-3 font-tech text-[10px] tracking-[0.15em] leading-relaxed text-black/60">
+                <RotateCcw className="w-4 h-4 shrink-0 mt-px text-black/50" strokeWidth={1.6} />
+                <span>
+                  Rétractation sous 14 jours après réception.{" "}
+                  <Link to="/retours" className="underline underline-offset-4 hover:text-black">
+                    Conditions de retour
+                  </Link>
+                </span>
+              </p>
             </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="font-display font-bold text-base text-black" data-testid="product-price-mobile">
-              {priceLabel(p)}
-            </p>
-            <p className="flex items-center gap-2 font-tech text-[10px] tracking-[0.3em] text-black/60">
-              <span className="relative flex w-2 h-2">
-                <span className="absolute inline-flex w-full h-full rounded-full bg-black/30 opacity-60 animate-ping" />
-                <span className="relative inline-flex w-2 h-2 rounded-full bg-black" />
-              </span>
-              EN&nbsp;STOCK
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onWish}
-              data-testid="wishlist-button-mobile"
-              aria-label="Ajouter à la wishlist"
-              className="shrink-0 flex items-center justify-center w-11 h-11 rounded-full border border-black/20 hover:border-black transition-colors cursor-pointer"
-            >
-              <Heart className={`w-4 h-4 ${wished ? "fill-black text-black" : "text-black/60"}`} />
-            </button>
-            <button
-              type="button"
-              onClick={onShare}
-              data-testid="share-button-mobile"
-              aria-label="Partager"
-              className="shrink-0 flex items-center justify-center w-11 h-11 rounded-full border border-black/20 hover:border-black transition-colors cursor-pointer"
-            >
-              <Share2 className="w-4 h-4 text-black/60" />
-            </button>
-            <button
-              type="button"
-              onClick={onAdd}
-              data-testid="add-to-cart-button-mobile"
-              className="flex-1 font-tech text-[12px] tracking-[0.2em] text-white bg-black rounded-full px-6 py-3 hover:bg-black/85 transition-colors duration-300 cursor-pointer"
-            >
-              Ajouter au panier
-            </button>
-          </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* ---------- sections détailles (accordéons) ---------- */}
+      {/* ---------- informations complémentaires (accordéons) ---------- */}
       <div className="relative z-20 bg-white border-t border-black/10">
         <div className="max-w-3xl mx-auto px-6 py-16">
           <Accordion title="Description" defaultOpen>
-            <p>À définir.</p>
-          </Accordion>
-          <Accordion title="Détails">
-            <p>À définir.</p>
-          </Accordion>
-          <Accordion title="Matières & composition">
-            <p>À définir.</p>
-          </Accordion>
-          <Accordion title="Entretien">
-            <p>À définir.</p>
+            <p>
+              {(CATALOG.find((c) => c.handle === p.productHandle) || {}).description || p.name}
+            </p>
           </Accordion>
           <Accordion title="Livraison">
             <p>
-              Délai standard estimé : 7 à 12 jours. Frais : à définir.{" "}
+              Délai standard estimé : 7 à 12 jours. Frais : 5&nbsp;€ (panier inférieur à 50&nbsp;€),
+              2,50&nbsp;€ (de 50&nbsp;€ à 99,99&nbsp;€), offerte dès 100&nbsp;€.{" "}
               <Link to="/livraison" className="underline underline-offset-4">
                 Page livraison
               </Link>
             </p>
           </Accordion>
-          <Accordion title="Retours">
+          <Accordion title="Retours et échanges">
             <p>
-              À définir.{" "}
+              14 jours après réception pour exercer votre rétractation. En cas de simple
+              rétractation, les frais de retour sont à votre charge ; retour possible via
+              Chronopost. Produit non conforme ou défectueux : garanties légales applicables,
+              frais de retour pris en charge.{" "}
               <Link to="/retours" className="underline underline-offset-4">
                 Page retours
               </Link>
@@ -506,6 +477,9 @@ export default function Product() {
           </div>
         </div>
       </div>
+
+      {/* ---------- vous aimerez aussi ---------- */}
+      <SimilarProducts current={p} />
 
       {/* galerie + guide des tailles */}
       <ProductGallery open={galleryOpen} onClose={() => setGalleryOpen(false)} variant={p} />
