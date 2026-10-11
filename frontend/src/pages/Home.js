@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Star, Truck, ShieldCheck, CreditCard, Gift, Mail } from "lucide-react";
+import { ArrowRight, Star, Truck, ShieldCheck, CreditCard, Gift, Mail, LayoutGrid, Shirt, Footprints } from "lucide-react";
 import { api } from "@/api";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 import LogoMark from "@/components/LogoMark";
 import introCampaign from "@/assets/intro-campaign.jpg";
 import introExtLeft from "@/assets/intro-ext-left.jpg";
@@ -10,14 +12,16 @@ import introExtRight from "@/assets/intro-ext-right.jpg";
 import zlogoWhite from "@/assets/zlogo-white.png";
 import ProductCard from "@/components/ProductCard";
 import Marquee from "@/components/Marquee";
-import { PRODUCTS } from "@/data/products";
+import { PRODUCTS, GROUPED_PRODUCTS } from "@/data/products";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 /* 1 — Écran d'introduction : campagne plein écran (100vw × 100svh, aucun bord vide) */
 function Intro() {
   const onDiscover = () => {
-    const el = document.querySelector("[data-testid=recommendations-section]");
+    const el =
+      document.querySelector("[data-testid=recommendations-section]") ||
+      document.querySelector("[data-testid=categories-section]");
     if (!el) return;
     if (window.__lenis) window.__lenis.scrollTo(el, { duration: 1.2 });
     else el.scrollIntoView({ behavior: "smooth" });
@@ -393,25 +397,135 @@ function BenefitsBar() {
   );
 }
 
-export default function Home() {
-  // Placeholder temporaire : en attendant les données de ventes réelles,
-  // la section « À découvrir » affiche les modèles groupés actuels.
-  // Dès que l'historique de commandes sera disponible, on remplacera
-  // `GROUPED_PRODUCTS` par un classement calculé côté API.
-  const recommended = PRODUCTS.filter((p) => p.badge === "recommended");
+/* Nos recommandations — réservées aux comptes connectés. Basées sur les vraies
+   interactions locales de l'utilisateur : produits consultés (zev_views_<id>,
+   enregistrés sur la fiche produit) et contenu du panier (poids supérieur).
+   Aucune donnée ni aucun produit inventé. */
+function Recommendations() {
+  const { user } = useAuth();
+  const { items } = useCart();
+  const [tab, setTab] = useState("all");
 
+  if (!user) return null;
+
+  let views = [];
+  try {
+    views = JSON.parse(localStorage.getItem(`zev_views_${user.id}`) || "[]");
+  } catch (e) {
+    views = [];
+  }
+
+  // poids : ajout au panier ×3, simple consultation ×1
+  const weights = {};
+  items.forEach((i) => { weights[i.variantId] = (weights[i.variantId] || 0) + 3; });
+  views.forEach((id) => { weights[id] = (weights[id] || 0) + 1; });
+  const hasHistory = Object.keys(weights).length > 0;
+
+  const likedTitles = new Set();
+  const likedTypes = new Set();
+  Object.keys(weights).forEach((id) => {
+    const v = PRODUCTS.find((x) => x.id === id);
+    if (v) {
+      likedTitles.add(v.productTitle);
+      likedTypes.add(v.productType);
+    }
+  });
+
+  const scored = GROUPED_PRODUCTS.map((g) => {
+    let s = 0;
+    g.variants.forEach((v) => { s += weights[v.id] || 0; });
+    if (hasHistory) {
+      if (likedTitles.has(g.productTitle)) s += 1;
+      if (likedTypes.has(g.productType)) s += 1;
+    }
+    return { g, s };
+  }).sort((a, b) => b.s - a.s);
+
+  const base = hasHistory ? scored.filter((x) => x.s > 0) : scored;
+  const list = (base.length > 0 ? base : scored).map((x) => x.g);
+
+  const filtered =
+    tab === "vetements"
+      ? list.filter((g) => g.productType === "VETEMENTS")
+      : tab === "accessoires"
+        ? list.filter((g) => g.productType !== "VETEMENTS") // chaussures ∈ accessoires
+        : list;
+
+  const TABS = [
+    { id: "all", label: "Voir tout", icon: LayoutGrid },
+    { id: "vetements", label: "Vêtements", icon: Shirt },
+    { id: "accessoires", label: "Accessoires", icon: Footprints },
+  ];
+
+  return (
+    <section className="relative px-6 sm:px-10 py-20 sm:py-28 max-w-[1400px] mx-auto" data-testid="recommendations-section">
+      <div className="flex items-end justify-between mb-8">
+        <div>
+          <p className="font-tech text-[10px] tracking-[0.45em] text-black/45">SÉLECTION&nbsp;POUR&nbsp;VOUS</p>
+          <h2 className="font-display font-extrabold uppercase text-2xl sm:text-4xl mt-3 text-black">
+            Nos recommandations
+          </h2>
+        </div>
+        <Link
+          to="/catalogue"
+          className="hidden sm:flex items-center gap-2 font-tech text-[11px] tracking-[0.25em] text-black/55 hover:text-black transition-colors"
+        >
+          VOIR&nbsp;LE&nbsp;CATALOGUE
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+
+      {/* trois choix : Voir tout / Vêtements / Accessoires */}
+      <div className="flex items-center gap-2 flex-wrap mb-10" data-testid="recommendations-tabs">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            data-testid={`reco-tab-${id}`}
+            aria-pressed={tab === id}
+            className={`inline-flex items-center gap-2 font-tech text-[10px] font-semibold tracking-[0.15em] uppercase rounded-full px-5 py-2.5 border transition-colors duration-200 cursor-pointer ${
+              tab === id
+                ? "bg-[#8E1721] text-white border-[#8E1721]"
+                : "bg-white text-black/60 border-black/10 hover:border-black/30 hover:text-black"
+            }`}
+          >
+            <Icon className="w-3.5 h-3.5" strokeWidth={1.8} />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {!hasHistory && (
+        <p className="font-tech text-[9px] tracking-[0.2em] text-black/35 mb-6" data-testid="reco-note">
+          Sélection du catalogue — elle s'affinera au fil de vos visites et de votre panier.
+        </p>
+      )}
+
+      {filtered.length > 0 ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          {filtered.map((g) => (
+            <ProductCard key={g.handle} group={g} />
+          ))}
+        </div>
+      ) : (
+        <div className="border border-dashed border-black/15 rounded-3xl py-14 px-8 text-center" data-testid="reco-empty">
+          <p className="font-tech text-[11px] tracking-[0.25em] text-black/45">
+            Aucun produit dans cette catégorie pour le moment.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default function Home() {
   return (
     <>
       <Intro />
       <Marquee />
       <BenefitsBar />
-      <ProductSection
-        testid="recommendations-section"
-        eyebrow="SÉLECTION POUR VOUS"
-        title="Recommandations"
-        items={recommended}
-        emptyNote="Les recommandations s'afficheront automatiquement dès que les données seront disponibles."
-      />
+      <Recommendations />
       <Categories />
       <Story />
       <HomeReviews />

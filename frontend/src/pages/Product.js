@@ -97,6 +97,20 @@ export default function Product() {
     });
   }, [idx]);
 
+  // Historique de consultation local, rattaché au compte connecté (identifiants
+  // produits uniquement — aucune donnée personnelle supplémentaire).
+  useEffect(() => {
+    if (!user || idx < 0) return;
+    try {
+      const key = `zev_views_${user.id}`;
+      const arr = JSON.parse(localStorage.getItem(key) || "[]").filter(
+        (id) => id !== PRODUCTS[idx].id,
+      );
+      arr.unshift(PRODUCTS[idx].id);
+      localStorage.setItem(key, JSON.stringify(arr.slice(0, 50)));
+    } catch (e) {}
+  }, [idx, user]);
+
   if (idx < 0) return <Navigate to="/catalogue" replace />;
   const p = PRODUCTS[idx];
   const siblings = PRODUCTS.filter((v) => v.productHandle === p.productHandle);
