@@ -21,7 +21,8 @@ function Intro() {
   const onDiscover = () => {
     const el =
       document.querySelector("[data-testid=recommendations-section]") ||
-      document.querySelector("[data-testid=categories-section]");
+      document.querySelector("[data-testid=categories-section]") ||
+      document.querySelector("[data-testid=story-section]");
     if (!el) return;
     if (window.__lenis) window.__lenis.scrollTo(el, { duration: 1.2 });
     else el.scrollIntoView({ behavior: "smooth" });
@@ -526,7 +527,8 @@ export default function Home() {
       <Marquee />
       <BenefitsBar />
       <Recommendations />
-      <Categories />
+      {/* Section catégories masquée temporairement — réactiver en décommentant
+          <Categories /> (composant conservé tel quel, pages catégories inchangées) */}
       <Story />
       <HomeReviews />
       <UGC />
