@@ -166,11 +166,25 @@ export default function Product() {
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <motion.div animate={zControls}>
               <motion.div
-                className="z-watermark w-[64vmin] h-[64vmin]"
+                className={`${p.watermark ? "" : "z-watermark"} w-[64vmin] h-[64vmin]`}
                 initial={false}
                 animate={{ backgroundColor: p.zTint }}
                 transition={{ duration: 0.8, ease: EASE }}
                 data-testid="z-watermark"
+                style={
+                  p.watermark
+                    ? {
+                        WebkitMaskImage: `url(${p.watermark})`,
+                        maskImage: `url(${p.watermark})`,
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                      }
+                    : undefined
+                }
               />
             </motion.div>
           </div>

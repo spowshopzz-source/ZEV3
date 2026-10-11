@@ -10,6 +10,7 @@ import sauconyBlanc from "../assets/saucony-blanc.png";
 import sauconyGris from "../assets/saucony-gris.png";
 import sauconyBleu from "../assets/saucony-bleu.png";
 import sauconyBordeaux from "../assets/saucony-bordeaux.png";
+import sauconyLogo from "../assets/saucony-logo.png";
 
 /*
  * ZEV SHOP — Shopify-shaped product schema.
@@ -215,9 +216,11 @@ export const CATALOG = [
     currencyCode: null, // set when Shopify connects
     priceRange: { min: null, max: null }, // set when Shopify connects
     options: [{ name: "Color", values: ["Noir", "Blanc", "Gris / Argent", "Blanc / Bleu", "Blanc / Bordeaux"] }],
-    // Ombres déjà intégrées aux visuels fournis → shadowTint transparent (pas
-    // de seconde ombre artificielle) ; pas de grand Z derrière les Saucony
-    // (zTint transparent) — fond neutre, personnalisable plus tard.
+    // Véritable logo Saucony en filigrane derrière la chaussure (même rôle que
+    // le Z des TN) ; sa couleur = zTint, adaptée à chaque coloris.
+    watermark: sauconyLogo,
+    // Ombres déjà intégrées aux visuels → shadowTint transparent ; images
+    // normalisées sur le même canevas 1200×800 que la TN noire → scale 1.0.
     variants: [
       {
         id: "saucony-noir",
@@ -233,8 +236,8 @@ export const CATALOG = [
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
         shadowTint: "rgba(0, 0, 0, 0)",
-        zTint: "rgba(0, 0, 0, 0)",
-        scale: 0.58,
+        zTint: "rgba(52, 56, 61, 0.16)",
+        scale: 1.0,
         shiftY: "0%",
         gallery: gallery(sauconyNoir),
       },
@@ -252,8 +255,8 @@ export const CATALOG = [
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.04)",
         shadowTint: "rgba(0, 0, 0, 0)",
-        zTint: "rgba(0, 0, 0, 0)",
-        scale: 0.58,
+        zTint: "rgba(126, 132, 140, 0.22)",
+        scale: 1.0,
         shiftY: "0%",
         gallery: gallery(sauconyBlanc),
       },
@@ -271,8 +274,8 @@ export const CATALOG = [
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
         shadowTint: "rgba(0, 0, 0, 0)",
-        zTint: "rgba(0, 0, 0, 0)",
-        scale: 0.58,
+        zTint: "rgba(128, 134, 142, 0.20)",
+        scale: 1.0,
         shiftY: "0%",
         gallery: gallery(sauconyGris),
       },
@@ -290,8 +293,8 @@ export const CATALOG = [
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
         shadowTint: "rgba(0, 0, 0, 0)",
-        zTint: "rgba(0, 0, 0, 0)",
-        scale: 0.58,
+        zTint: "rgba(95, 168, 211, 0.22)",
+        scale: 1.0,
         shiftY: "0%",
         gallery: gallery(sauconyBleu),
       },
@@ -309,8 +312,8 @@ export const CATALOG = [
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
         shadowTint: "rgba(0, 0, 0, 0)",
-        zTint: "rgba(0, 0, 0, 0)",
-        scale: 0.58,
+        zTint: "rgba(122, 30, 43, 0.22)",
+        scale: 1.0,
         shiftY: "0%",
         gallery: gallery(sauconyBordeaux),
       },
@@ -324,6 +327,7 @@ export const PRODUCTS = CATALOG.flatMap((prod) =>
   prod.variants.map((v) => ({
     ...v,
     productHandle: prod.handle,
+    watermark: prod.watermark || null,
     productTitle: prod.title,
     productType: prod.productType,
     name: v.title,
