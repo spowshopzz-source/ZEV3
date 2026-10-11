@@ -10,7 +10,6 @@ import sauconyBlanc from "../assets/saucony-blanc.png";
 import sauconyGris from "../assets/saucony-gris.png";
 import sauconyBleu from "../assets/saucony-bleu.png";
 import sauconyBordeaux from "../assets/saucony-bordeaux.png";
-import sauconyLogo from "../assets/saucony-logo.png";
 
 /*
  * ZEV SHOP — Shopify-shaped product schema.
@@ -216,9 +215,8 @@ export const CATALOG = [
     currencyCode: null, // set when Shopify connects
     priceRange: { min: null, max: null }, // set when Shopify connects
     options: [{ name: "Color", values: ["Noir", "Blanc", "Gris / Argent", "Blanc / Bleu", "Blanc / Bordeaux"] }],
-    // Véritable logo Saucony en filigrane derrière la chaussure (même rôle que
-    // le Z des TN) ; sa couleur = zTint, adaptée à chaque coloris.
-    watermark: sauconyLogo,
+    // Grand logo ZEV SHOP (Z) en filigrane derrière la chaussure, comme les
+    // TN — sa couleur = zTint, adaptée à chaque coloris.
     // Ombres déjà intégrées aux visuels → shadowTint transparent ; images
     // normalisées sur le même canevas 1200×800 que la TN noire → scale 1.0.
     variants: [
