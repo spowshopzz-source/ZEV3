@@ -10,14 +10,14 @@ import introExtRight from "@/assets/intro-ext-right.jpg";
 import zlogoWhite from "@/assets/zlogo-white.png";
 import ProductCard from "@/components/ProductCard";
 import Marquee from "@/components/Marquee";
-import { PRODUCTS, GROUPED_PRODUCTS } from "@/data/products";
+import { PRODUCTS } from "@/data/products";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 /* 1 — Écran d'introduction : campagne plein écran (100vw × 100svh, aucun bord vide) */
 function Intro() {
   const onDiscover = () => {
-    const el = document.querySelector("[data-testid=bestsellers-section]");
+    const el = document.querySelector("[data-testid=recommendations-section]");
     if (!el) return;
     if (window.__lenis) window.__lenis.scrollTo(el, { duration: 1.2 });
     else el.scrollIntoView({ behavior: "smooth" });
@@ -405,13 +405,6 @@ export default function Home() {
       <Intro />
       <Marquee />
       <BenefitsBar />
-      <ProductSection
-        testid="bestsellers-section"
-        eyebrow="SÉLECTION ZEV SHOP"
-        title="À découvrir"
-        items={GROUPED_PRODUCTS}
-        emptyNote="La sélection s'affichera automatiquement dès que les données seront disponibles."
-      />
       <ProductSection
         testid="recommendations-section"
         eyebrow="SÉLECTION POUR VOUS"
