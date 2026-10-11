@@ -91,6 +91,7 @@ function PageTransition() {
 
 function App() {
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
     const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
     window.__lenis = lenis;
     let raf;

@@ -373,7 +373,7 @@ export default function Product() {
 
         {/* ---------- panneau d'achat mobile — flux empilé ---------- */}
         <div
-          className="sm:hidden absolute z-30 inset-x-0 bottom-0 bg-white/90 backdrop-blur-md border-t border-black/10 px-5 pt-4 pb-4 flex flex-col gap-3"
+          className="sm:hidden absolute z-30 inset-x-0 bottom-0 bg-white/90 backdrop-blur-md border-t border-black/10 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col gap-3"
           data-testid="mobile-buy-panel"
         >
           <h1

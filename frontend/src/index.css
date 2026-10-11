@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* Polish iOS / fluidité — tap highlight, zoom champs Safari, reduced motion */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+html {
+  scroll-behavior: smooth;
+}
+.marquee-track {
+  will-change: transform;
+}
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* empêche le zoom automatique de Safari iOS */
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .marquee-track {
+    animation-play-state: paused !important;
+  }
+}
+
 @layer base {
   :root {
     --zev-black: #111111;

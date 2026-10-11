@@ -214,6 +214,19 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Verrouille le défilement de la page quand le menu mobile ou la recherche
+  // plein écran est ouverte (évite le scroll d'arrière-plan sur iOS).
+  useEffect(() => {
+    if (!menuOpen && !searchOpen) return undefined;
+    const lenis = window.__lenis;
+    if (lenis) lenis.stop();
+    document.body.style.overflow = "hidden";
+    return () => {
+      if (lenis) lenis.start();
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen, searchOpen]);
+
   // petite animation du compteur panier à l'ajout
   useEffect(() => {
     if (count === 0) return;
@@ -235,7 +248,7 @@ export default function Header() {
         className={`fixed top-8 inset-x-0 z-50 h-20 flex items-center justify-between px-6 sm:px-10 border-b transition-colors duration-500 ${
           immersive
             ? "bg-transparent backdrop-blur-none border-transparent"
-            : "bg-white/85 backdrop-blur-xl border-black/5"
+            : "bg-white/85 backdrop-blur-md border-black/5"
         }`}
         data-testid="site-header"
       >

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { X, Trash2, Minus, Plus } from "lucide-react";
@@ -9,6 +10,19 @@ const EASE = [0.16, 1, 0.3, 1];
 
 export default function CartDrawer() {
   const { items, open, setOpen, setQty, remove, count } = useCart();
+
+  // Verrouille le défilement de la page pendant l'ouverture du tiroir (iOS :
+  // évite le scroll d'arrière-plan et tout blocage à la fermeture).
+  useEffect(() => {
+    if (!open) return undefined;
+    const lenis = window.__lenis;
+    if (lenis) lenis.stop();
+    document.body.style.overflow = "hidden";
+    return () => {
+      if (lenis) lenis.start();
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   // Total automatique : si un seul prix manque (non défini Shopify),
   // le total reste en placeholder — aucun prix inventé.
@@ -68,13 +82,13 @@ export default function CartDrawer() {
                 onClick={() => setOpen(false)}
                 data-testid="cart-close-button"
                 aria-label="Fermer le panier"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-black/15 text-black/70 hover:border-black/40 transition-colors cursor-pointer"
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-black/15 text-black/70 hover:border-black/40 active:scale-95 transition-all duration-200 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 py-6">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-6">
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-4">
                   <p className="font-tech text-[11px] tracking-[0.35em] text-black/40">
@@ -140,7 +154,7 @@ export default function CartDrawer() {
                             onClick={() => setQty(item.key, item.qty - 1)}
                             data-testid="cart-qty-minus"
                             aria-label="Diminuer la quantité"
-                            className="flex items-center justify-center w-8 h-8 text-black/60 hover:text-black transition-colors cursor-pointer"
+                            className="flex items-center justify-center w-8 h-8 text-black/60 hover:text-black active:scale-90 transition-all duration-150 cursor-pointer"
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
@@ -152,7 +166,7 @@ export default function CartDrawer() {
                             onClick={() => setQty(item.key, item.qty + 1)}
                             data-testid="cart-qty-plus"
                             aria-label="Augmenter la quantité"
-                            className="flex items-center justify-center w-8 h-8 text-black/60 hover:text-black transition-colors cursor-pointer"
+                            className="flex items-center justify-center w-8 h-8 text-black/60 hover:text-black active:scale-90 transition-all duration-150 cursor-pointer"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -165,7 +179,10 @@ export default function CartDrawer() {
             </div>
 
             {items.length > 0 && (
-              <div className="px-6 py-6 border-t border-black/10">
+              <div
+                className="px-6 pt-6 border-t border-black/10"
+                style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+              >
                 <div
                   className="flex items-center justify-between mb-2"
                   data-testid="cart-shipping-row"
@@ -198,7 +215,7 @@ export default function CartDrawer() {
                   type="button"
                   onClick={onCheckout}
                   data-testid="cart-checkout-button"
-                  className="w-full font-tech text-[11px] tracking-[0.3em] text-white bg-black rounded-full py-4 hover:bg-black/85 active:scale-[0.99] transition-all duration-300 cursor-pointer"
+                  className="w-full font-tech text-[11px] tracking-[0.3em] text-white bg-black rounded-full py-4 hover:bg-black/85 active:scale-[0.98] transition-all duration-200 cursor-pointer"
                 >
                   COMMANDER
                 </button>
