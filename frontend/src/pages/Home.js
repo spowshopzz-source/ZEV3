@@ -19,13 +19,14 @@ const EASE = [0.16, 1, 0.3, 1];
 /* 1 — Écran d'introduction : campagne plein écran (100vw × 100svh, aucun bord vide) */
 function Intro() {
   const onDiscover = () => {
-    const el =
-      document.querySelector("[data-testid=recommendations-section]") ||
-      document.querySelector("[data-testid=categories-section]") ||
-      document.querySelector("[data-testid=story-section]");
+    // Défilement fluide vers NOTRE SÉLECTION, avec compensation du header
+    const el = document.querySelector("[data-testid=selection-section]");
     if (!el) return;
-    if (window.__lenis) window.__lenis.scrollTo(el, { duration: 1.2 });
-    else el.scrollIntoView({ behavior: "smooth" });
+    if (window.__lenis) window.__lenis.scrollTo(el, { duration: 1.2, offset: -72 });
+    else {
+      const y = el.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
   };
 
   return (
@@ -292,6 +293,20 @@ function HomeReviews() {
           Aucun avis pour le moment. Les avis clients s'afficheront ici automatiquement.
         </p>
       )}
+      <div className="mt-10 text-center">
+        <p className="font-tech text-[10px] tracking-[0.25em] text-black/45 mb-5">
+          REJOIGNEZ&nbsp;LA&nbsp;COMMUNAUTÉ&nbsp;ZEV&nbsp;SHOP
+        </p>
+        <a
+          href="https://www.instagram.com/zzevshop/"
+          target="_blank"
+          rel="noreferrer"
+          data-testid="reviews-instagram-cta"
+          className="inline-flex items-center gap-2.5 font-tech text-[11px] tracking-[0.3em] text-white bg-[#8E1721] rounded-full px-8 py-4 hover:bg-[#761019] active:scale-[0.98] transition-all duration-200"
+        >
+          RETROUVEZ-NOUS&nbsp;SUR&nbsp;INSTAGRAM
+        </a>
+      </div>
     </section>
   );
 }
@@ -308,14 +323,16 @@ function UGC() {
         {["Instagram", "TikTok", "Instagram", "TikTok"].map((label, i) => (
           <a
             key={i}
-            href="#"
-            title={`Ajouter le lien ${label}`}
+            href={label === "Instagram" ? "https://www.instagram.com/zzevshop/" : "#"}
+            target={label === "Instagram" ? "_blank" : undefined}
+            rel={label === "Instagram" ? "noreferrer" : undefined}
+            title={label === "Instagram" ? "ZEV SHOP sur Instagram" : `Ajouter le lien ${label}`}
             className="relative aspect-square bg-[#F6F6F5] border border-black/5 rounded-3xl flex flex-col items-center justify-center gap-3 hover:border-black/20 transition-colors duration-300"
             data-testid={`ugc-slot-${i}`}
           >
             <div className="z-watermark w-14 h-14 bg-black/[0.07]" />
             <p className="font-tech text-[9px] tracking-[0.25em] text-black/40 px-4 text-center">
-              AJOUTER LE LIEN {label.toUpperCase()}
+              {label === "Instagram" ? "@ZZEVSHOP" : `AJOUTER LE LIEN ${label.toUpperCase()}`}
             </p>
           </a>
         ))}
@@ -526,6 +543,12 @@ export default function Home() {
       <Intro />
       <Marquee />
       <BenefitsBar />
+      <ProductSection
+        testid="selection-section"
+        eyebrow="BOUTIQUE ZEV SHOP"
+        title="Notre sélection"
+        items={GROUPED_PRODUCTS}
+      />
       <Recommendations />
       {/* Section catégories masquée temporairement — réactiver en décommentant
           <Categories /> (composant conservé tel quel, pages catégories inchangées) */}
