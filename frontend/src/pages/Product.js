@@ -295,62 +295,72 @@ export default function Product() {
             transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
             className="max-w-md flex flex-col gap-7"
           >
-            {/* marque + modèle */}
-            <div>
-              <p className="font-tech text-[10px] tracking-[0.45em] text-black/45" data-testid="product-brand">
-                {(findGroup(p.id) && findGroup(p.id).brand ? findGroup(p.id).brand : p.productType).toUpperCase()}
-              </p>
-              <h1
-                className="font-display text-2xl sm:text-3xl font-bold text-black leading-snug mt-3"
-                data-testid="product-variant-name"
-              >
-                {p.name}
-              </h1>
-            </div>
+            {/* identité + prix à gauche, coloris à droite sur mobile —
+                empilés à partir de sm (disposition desktop inchangée) */}
+            <div className="flex items-start justify-between gap-5 sm:block">
+              <div className="min-w-0 flex flex-col gap-7">
+                {/* marque + modèle */}
+                <div>
+                  <p className="font-tech text-[10px] tracking-[0.45em] text-black/45" data-testid="product-brand">
+                    {(findGroup(p.id) && findGroup(p.id).brand ? findGroup(p.id).brand : p.productType).toUpperCase()}
+                  </p>
+                  <h1
+                    className="font-display text-2xl sm:text-3xl font-bold text-black leading-snug mt-3"
+                    data-testid="product-variant-name"
+                  >
+                    {p.name}
+                  </h1>
+                </div>
 
-            {/* prix + disponibilité */}
-            <div>
-              <div className="flex items-baseline gap-3">
-                <p className="font-display font-bold text-xl sm:text-2xl text-black" data-testid="product-price">
-                  {priceLabel(p)}
-                </p>
-                {p.oldPrice && (
-                  <p className="font-tech text-[11px] text-black/40 line-through" data-testid="product-old-price">
-                    {priceLabel(p.oldPrice)}
+                {/* prix + disponibilité */}
+                <div>
+                  <div className="flex items-baseline gap-3">
+                    <p className="font-display font-bold text-xl sm:text-2xl text-black" data-testid="product-price">
+                      {priceLabel(p)}
+                    </p>
+                    {p.oldPrice && (
+                      <p className="font-tech text-[11px] text-black/40 line-through" data-testid="product-old-price">
+                        {priceLabel(p.oldPrice)}
+                      </p>
+                    )}
+                    {p.discountPercent && (
+                      <p className="font-tech text-[10px] text-black bg-black/[0.06] rounded-full px-2.5 py-1" data-testid="product-discount">
+                        -{p.discountPercent}%
+                      </p>
+                    )}
+                  </div>
+                  <p
+                    className={`flex items-center gap-2 font-tech text-[10px] tracking-[0.3em] mt-2.5 ${
+                      p.available ? "text-black/60" : "text-black/35"
+                    }`}
+                  >
+                    {p.available ? (
+                      <>
+                        <span className="relative flex w-2 h-2">
+                          <span className="absolute inline-flex w-full h-full rounded-full bg-black/30 opacity-60 animate-ping" />
+                          <span className="relative inline-flex w-2 h-2 rounded-full bg-black" />
+                        </span>
+                        EN&nbsp;STOCK
+                      </>
+                    ) : (
+                      <>ÉPUISÉ</>
+                    )}
                   </p>
-                )}
-                {p.discountPercent && (
-                  <p className="font-tech text-[10px] text-black bg-black/[0.06] rounded-full px-2.5 py-1" data-testid="product-discount">
-                    -{p.discountPercent}%
-                  </p>
-                )}
+                </div>
               </div>
-              <p
-                className={`flex items-center gap-2 font-tech text-[10px] tracking-[0.3em] mt-2.5 ${
-                  p.available ? "text-black/60" : "text-black/35"
-                }`}
-              >
-                {p.available ? (
-                  <>
-                    <span className="relative flex w-2 h-2">
-                      <span className="absolute inline-flex w-full h-full rounded-full bg-black/30 opacity-60 animate-ping" />
-                      <span className="relative inline-flex w-2 h-2 rounded-full bg-black" />
-                    </span>
-                    EN&nbsp;STOCK
-                  </>
-                ) : (
-                  <>ÉPUISÉ</>
-                )}
-              </p>
-            </div>
 
-            {/* coloris */}
-            <div className="border-t border-black/10 pt-7">
-              <p className="font-tech text-[10px] tracking-[0.4em] text-black/40">
-                COLORIS&nbsp;—&nbsp;<span className="text-black/70">{p.selectedOptions.Color.toUpperCase()}</span>
-              </p>
-              <div className="mt-4">
-                <ColorSelectors products={siblings} active={activeIdx} idPrefix="info-" />
+              {/* coloris — colonne droite compacte sur mobile (2 pastilles
+                  par rangée si nécessaire), rangée complète sur desktop */}
+              <div className="shrink-0 pt-1 sm:pt-7 sm:mt-7 sm:border-t sm:border-black/10">
+                <p className="font-tech text-[10px] tracking-[0.4em] text-black/40 text-right sm:text-left">
+                  COLORIS
+                  <span className="hidden sm:inline">
+                    &nbsp;—&nbsp;<span className="text-black/70">{p.selectedOptions.Color.toUpperCase()}</span>
+                  </span>
+                </p>
+                <div className="mt-3 sm:mt-4 flex justify-end sm:justify-start max-w-[96px] sm:max-w-none">
+                  <ColorSelectors products={siblings} active={activeIdx} idPrefix="info-" />
+                </div>
               </div>
             </div>
 

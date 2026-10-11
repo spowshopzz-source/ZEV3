@@ -12,11 +12,11 @@ export default function ColorSelectors({ products, active, idPrefix = "" }) {
     <div
       className={
         inline
-          ? "flex items-center gap-3"
+          ? "flex items-center gap-3 flex-wrap"
           : "absolute z-30 inset-x-0 bottom-7 sm:bottom-9 flex justify-center pointer-events-none"
       }
     >
-      <div className={`flex items-center gap-4 sm:gap-5 ${inline ? "" : "pointer-events-auto"}`}>
+      <div className={`flex items-center gap-4 sm:gap-5 ${inline ? "flex-wrap justify-end sm:justify-start" : "pointer-events-auto"}`}>
         {products.map((p, i) => (
           <Link
             key={p.id}

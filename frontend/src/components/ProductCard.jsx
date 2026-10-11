@@ -16,8 +16,13 @@ const EASE = [0.65, 0, 0.35, 1];
  *   - group={groupObj}    : nouveau mode groupé (plusieurs variantes de coloris)
  *   - product={variantObj}: mode legacy (variante unique — utilisé par la wishlist)
  * En mode groupé : la carte affiche des pastilles de coloris sous l'image.
- * L'image bascule entre coloris via un carrousel vertical identique au ProductStage
- * (y: -135% → 0 → +135% sur 800 ms, cubic-bezier(0.65,0,0.35,1)).
+ *
+ * Changement de coloris : fondu léger (220 ms, opacity uniquement — aucun
+ * conflit avec la lévitation, aucun saut de dimensions). Les images des
+ * coloris frères sont préchargées à l'affichage de la carte, et l'image
+ * précédente reste visible jusqu'à ce que la suivante soit prête : pas de
+ * clignotement ni d'image blanche, même sur clics rapides (seul le dernier
+ * coloris demandé finit affiché).
  * Fond de l'image = gris très léger (#F5F5F5) pour mieux détacher les cartes.
  */
 export default function ProductCard({ product, group, feature = false }) {
@@ -42,6 +47,39 @@ export default function ProductCard({ product, group, feature = false }) {
   }, [variants, activeId]);
 
   const active = variants.find((v) => v.id === activeId) || variants[0];
+
+  // Précharge les images des coloris frères dès que la carte est affichée
+  // (cache navigateur → permutation instantanée, sans requête répétée).
+  useEffect(() => {
+    variants.forEach((v) => {
+      const im = new window.Image();
+      im.src = v.image;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variants]);
+
+  // L'image affichée ne bascule qu'une fois la nouvelle chargée — l'ancienne
+  // reste visible entre-temps (anti-clignotement).
+  const [displayedId, setDisplayedId] = useState(activeId);
+  useEffect(() => {
+    if (!activeId || activeId === displayedId) return undefined;
+    const v = variants.find((x) => x.id === activeId);
+    if (!v) return undefined;
+    let cancelled = false;
+    const im = new window.Image();
+    const done = () => {
+      if (!cancelled) setDisplayedId(activeId);
+    };
+    im.onload = done;
+    im.onerror = done;
+    im.src = v.image;
+    if (im.complete) done();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeId, displayedId, variants]);
+
+  const displayed = variants.find((v) => v.id === displayedId) || active;
   if (!active) return null;
 
   const multi = variants.length > 1;
@@ -67,7 +105,7 @@ export default function ProductCard({ product, group, feature = false }) {
   // Index affiché : si groupé, index local au modèle (01/03). Sinon, l'index flat.
   const indexLabel =
     multi && active.groupIndex && active.groupCount
-      ? `${active.groupIndex}\u00A0/\u00A0${active.groupCount}`
+      ? `${active.groupIndex} / ${active.groupCount}`
       : active.index
       ? `${active.index}`
       : null;
@@ -126,46 +164,35 @@ export default function ProductCard({ product, group, feature = false }) {
           >
             <ShoeTiltLayer tilt={tilt} hoverScale={0} className="w-full h-full">
               <motion.div className="relative w-full h-full" style={{ scale: hoverScale, y: hoverY }}>
-                {/* Carrousel vertical — identique à l'animation ProductStage. */}
-                <AnimatePresence>
+                {/* Fondu croisé léger entre coloris (220 ms, opacity only) —
+                    l'image précédente reste visible jusqu'au chargement de la
+                    suivante : aucun blanc, aucun saut, dimensions constantes. */}
+                <AnimatePresence initial={false}>
                   <motion.div
-                    key={active.id}
+                    key={displayed.id}
                     className="absolute inset-0"
-                    initial={{ y: "-135%", scale: 0.94, opacity: 0 }}
+                    initial={{ opacity: 0 }}
                     animate={{
-                      y: "0%",
-                      scale: 1,
                       opacity: 1,
-                      transition: {
-                        y: { duration: 0.8, ease: EASE },
-                        scale: { duration: 0.8, ease: EASE },
-                        opacity: { duration: 0.3, ease: "easeOut" },
-                      },
+                      transition: { duration: 0.22, ease: "easeOut" },
                     }}
                     exit={{
-                      y: "135%",
-                      scale: 0.96,
                       opacity: 0,
-                      transition: {
-                        y: { duration: 0.8, ease: EASE },
-                        scale: { duration: 0.8, ease: EASE },
-                        opacity: { duration: 0.3, delay: 0.5, ease: "easeIn" },
-                      },
+                      transition: { duration: 0.18, ease: "easeIn" },
                     }}
-                    data-testid={`product-card-image-${active.id}`}
+                    data-testid={`product-card-image-${displayed.id}`}
                   >
                     <div
                       className="w-full h-full"
-                      style={{ transform: `scale(${active.scale}) translateY(${active.shiftY})` }}
+                      style={{ transform: `scale(${displayed.scale}) translateY(${displayed.shiftY})` }}
                     >
                       <img
-                        src={active.image}
-                        alt={`ZEV SHOP — ${active.name}`}
+                        src={displayed.image}
+                        alt={`ZEV SHOP — ${displayed.name}`}
                         draggable="false"
-                        loading="lazy"
                         decoding="async"
                         className="relative w-full h-full object-contain select-none pointer-events-none will-change-transform"
-                        style={{ filter: `drop-shadow(0 24px 22px ${active.glow})` }}
+                        style={{ filter: `drop-shadow(0 24px 22px ${displayed.glow})` }}
                       />
                     </div>
                   </motion.div>
@@ -207,7 +234,8 @@ export default function ProductCard({ product, group, feature = false }) {
 
         {/* Pastilles de coloris — plates (couleur fidèle, sans brillance),
             bordure fine. Mobile : point visible ~11 px dans une zone tactile
-            ~44 px (padding). Desktop : 24 px. */}
+            ~44 px (padding). Desktop : 24 px. La pastille active se met à jour
+            immédiatement, indépendamment du chargement de l'image. */}
         {multi && (
           <div
             className="flex items-center gap-0.5 sm:gap-2.5 mt-1.5 sm:mt-3.5 flex-wrap -ml-2 sm:ml-0"
