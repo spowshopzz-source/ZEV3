@@ -216,9 +216,9 @@ export const CATALOG = [
     priceRange: { min: null, max: null }, // set when Shopify connects
     options: [{ name: "Color", values: ["Noir", "Blanc", "Gris / Argent", "Blanc / Bleu", "Blanc / Bordeaux"] }],
     // Grand logo ZEV SHOP (Z) en filigrane derrière la chaussure, comme les
-    // TN — sa couleur = zTint, adaptée à chaque coloris.
-    // Ombres déjà intégrées aux visuels → shadowTint transparent ; images
-    // normalisées sur le même canevas 1200×800 que la TN noire → scale 1.0.
+    // TN — sa couleur = zTint, adaptée à chaque coloris. Ombre ovale animée
+    // détachée (même système que l'ASICS) ; images normalisées sur le même
+    // canevas 1200×800 que la TN noire → scale 1.0.
     variants: [
       {
         id: "saucony-noir",
@@ -233,7 +233,7 @@ export const CATALOG = [
         swatchFlat: "#141414",
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
-        shadowTint: "rgba(0, 0, 0, 0)",
+        shadowTint: "rgba(10, 10, 10, 0.26)",
         zTint: "rgba(52, 56, 61, 0.16)",
         scale: 1.0,
         shiftY: "0%",
@@ -252,7 +252,7 @@ export const CATALOG = [
         swatchFlat: "#F4F4F4",
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.04)",
-        shadowTint: "rgba(0, 0, 0, 0)",
+        shadowTint: "rgba(10, 10, 10, 0.26)",
         zTint: "rgba(126, 132, 140, 0.22)",
         scale: 1.0,
         shiftY: "0%",
@@ -271,7 +271,7 @@ export const CATALOG = [
         swatchFlat: "linear-gradient(135deg, #ECECEC, #9AA0A6)",
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
-        shadowTint: "rgba(0, 0, 0, 0)",
+        shadowTint: "rgba(10, 10, 10, 0.26)",
         zTint: "rgba(128, 134, 142, 0.20)",
         scale: 1.0,
         shiftY: "0%",
@@ -290,7 +290,7 @@ export const CATALOG = [
         swatchFlat: "linear-gradient(135deg, #F4F4F4, #5FA8D3)",
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
-        shadowTint: "rgba(0, 0, 0, 0)",
+        shadowTint: "rgba(10, 10, 10, 0.26)",
         zTint: "rgba(95, 168, 211, 0.22)",
         scale: 1.0,
         shiftY: "0%",
@@ -309,7 +309,7 @@ export const CATALOG = [
         swatchFlat: "linear-gradient(135deg, #F4F4F4, #7A1E2B)",
         glow: "rgba(0, 0, 0, 0)",
         spotlight: "rgba(0, 0, 0, 0.05)",
-        shadowTint: "rgba(0, 0, 0, 0)",
+        shadowTint: "rgba(10, 10, 10, 0.26)",
         zTint: "rgba(122, 30, 43, 0.22)",
         scale: 1.0,
         shiftY: "0%",
