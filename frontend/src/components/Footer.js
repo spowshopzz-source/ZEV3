@@ -6,8 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { VETEMENTS, ACCESSOIRES } from "@/components/Header";
 
 const SOCIALS = [
-  { id: "instagram", label: "Instagram", d: "M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5a4.25 4.25 0 0 0 4.25 4.25h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.75a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z" },
-  { id: "tiktok", label: "TikTok", d: "M16.6 3c.4 2.2 1.8 3.6 4 3.9v2.6c-1.5 0-2.9-.5-4-1.3v5.9c0 3.8-2.7 6.4-6.2 6.4A5.9 5.9 0 0 1 4.5 14c0-3.4 2.6-5.9 6.1-5.9.3 0 .7 0 1 .1v2.8a3 3 0 0 0-1-.2 3 3 0 0 0-3.1 3.1 3 3 0 0 0 3.1 3.1c1.9 0 3.1-1.3 3.1-3.4V3h2.9Z" },
+  { id: "instagram", label: "Instagram", href: "https://www.instagram.com/zzevshop/", d: "M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5a4.25 4.25 0 0 0 4.25 4.25h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.75a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z" },
 ];
 
 const LINK = "footer-link font-tech text-[11px] tracking-[0.2em] text-[#F5F1F1]/75 hover:text-white transition-colors";
@@ -83,12 +82,14 @@ export default function Footer() {
               RÉSEAUX&nbsp;SOCIAUX
             </p>
             <div className="flex items-center gap-3">
-              {SOCIALS.map(({ id, label, d }) => (
+              {SOCIALS.map(({ id, label, href, d }) => (
                 <a
                   key={id}
-                  href="#"
-                  title={`Ajouter le lien ${label}`}
-                  aria-label={`Ajouter le lien ${label}`}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={`ZEV SHOP sur ${label}`}
+                  aria-label={`ZEV SHOP sur ${label}`}
                   data-testid={`social-${id}`}
                   className="flex items-center justify-center w-9 h-9 rounded-full border border-white/25 text-[#F5F1F1]/80 hover:text-white hover:border-white transition-colors duration-300"
                 >
@@ -97,10 +98,6 @@ export default function Footer() {
                   </svg>
                 </a>
               ))}
-            </div>
-            <p className="font-tech text-[8px] tracking-[0.25em] text-[#F5F1F1]/40 mt-2">
-              LIENS&nbsp;À&nbsp;DÉFINIR
-            </p>
           </div>
         </div>
 
@@ -115,7 +112,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-6 border-t border-white/10 flex flex-col lg:flex-row justify-between gap-3">
           <p className="font-tech text-[9px] tracking-[0.3em] text-[#F5F1F1]/55">
-            © 2025 ZEV SHOP — TOUS DROITS RÉSERVÉS
+            © {new Date().getFullYear()} ZEV SHOP — TOUS DROITS RÉSERVÉS
           </p>
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-1 font-tech text-[9px] tracking-[0.3em] text-[#F5F1F1]/55">
             <span>FRANÇAIS</span>

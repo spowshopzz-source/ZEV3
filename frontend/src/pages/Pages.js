@@ -196,7 +196,7 @@ export function Faq() {
     { q: "Quels sont les frais de livraison ?", a: "5 € (panier inférieur à 50 €), 2,50 € (de 50 € à moins de 100 €), offerte dès 100 €." },
     { q: "Comment retourner un article ?", a: "Vous disposez de 14 jours après réception. Demandez les instructions via la page Contact — détails sur la page Retours." },
     { q: "Comment suivre ma commande ?", a: "Depuis la page Suivi de commande, avec votre numéro de commande." },
-    { q: "Puis-je commander sans compte ?", a: "Oui. Avec un compte : historique, wishlist, suivi simplifié et programme de récompense (1 000 € d'achats → coupon de 100 €)." },
+    { q: "Puis-je commander sans compte ?", a: "Oui. Avec un compte : historique, wishlist et suivi simplifié." },
   ];
   const [open, setOpen] = useState(null);
   return (

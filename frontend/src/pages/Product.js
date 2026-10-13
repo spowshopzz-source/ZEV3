@@ -50,7 +50,7 @@ function SimilarProducts({ current }) {
         <h2 className="font-display font-extrabold uppercase text-2xl sm:text-4xl mt-3 text-black">
           Vous aimerez aussi
         </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mt-10">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 mt-10">
           {list.map((g) => (
             <ProductCard key={g.handle} group={g} />
           ))}

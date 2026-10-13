@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { User, Package, Heart, MapPin, Gift, LogOut, Plus, Trash2 } from "lucide-react";
+import { User, Package, Heart, MapPin, LogOut, Plus, Trash2, Eye, EyeOff } from "lucide-react";
 import { api, formatApiError } from "@/api";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
@@ -18,6 +18,7 @@ function AuthForms() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const { login, register } = useAuth();
   const navigate = useNavigate();
@@ -46,9 +47,12 @@ function AuthForms() {
     }
   };
 
+  const FIELD =
+    "h-13 py-3.5 px-6 font-tech text-[11px] tracking-[0.15em] border border-black/15 rounded-full text-black placeholder:text-black/35 focus:outline-none focus:border-black transition-colors w-full";
+
   return (
     <div className="max-w-md mx-auto" data-testid="auth-forms">
-      <div className="flex justify-center gap-8 mb-10">
+      <div className="flex justify-center gap-8 mb-8">
         {[
           { id: "login", label: "CONNEXION" },
           { id: "register", label: "CRÉER UN COMPTE" },
@@ -67,7 +71,7 @@ function AuthForms() {
         ))}
       </div>
 
-      <form onSubmit={submit} className="flex flex-col gap-4" data-testid={`form-${mode}`}>
+      <form onSubmit={submit} className="flex flex-col gap-3.5" data-testid={`form-${mode}`}>
         {mode === "register" && (
           <input
             type="text"
@@ -76,7 +80,7 @@ function AuthForms() {
             placeholder="Nom / prénom"
             required
             data-testid="auth-name-input"
-            className="h-14 px-6 font-tech text-[11px] tracking-[0.15em] border border-black/15 rounded-full text-black placeholder:text-black/35 focus:outline-none focus:border-black transition-colors"
+            className={FIELD}
           />
         )}
         <input
@@ -86,31 +90,48 @@ function AuthForms() {
           placeholder="Email"
           required
           data-testid="auth-email-input"
-          className="h-14 px-6 font-tech text-[11px] tracking-[0.15em] border border-black/15 rounded-full text-black placeholder:text-black/35 focus:outline-none focus:border-black transition-colors"
+          className={FIELD}
         />
         {mode !== "forgot" && (
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={mode === "register" ? "Mot de passe (8 caractères min.)" : "Mot de passe"}
-            required
-            minLength={mode === "register" ? 8 : 1}
-            data-testid="auth-password-input"
-            className="h-14 px-6 font-tech text-[11px] tracking-[0.15em] border border-black/15 rounded-full text-black placeholder:text-black/35 focus:outline-none focus:border-black transition-colors"
-          />
+          <div className="relative">
+            <input
+              type={showPw ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={mode === "register" ? "Mot de passe (8 caractères min.)" : "Mot de passe"}
+              required
+              minLength={mode === "register" ? 8 : 1}
+              data-testid="auth-password-input"
+              className={`${FIELD} pr-14`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPw((s) => !s)}
+              data-testid="auth-password-toggle"
+              aria-label={showPw ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 text-black/40 hover:text-black transition-colors cursor-pointer"
+            >
+              {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         )}
         <button
           type="submit"
           disabled={busy}
           data-testid="auth-submit-button"
-          className="h-14 font-tech text-[11px] tracking-[0.3em] text-white bg-black rounded-full hover:bg-black/85 transition-colors cursor-pointer disabled:opacity-50 mt-2"
+          className="h-13 py-3.5 font-tech text-[11px] tracking-[0.3em] text-white bg-black rounded-full hover:bg-black/85 active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 mt-1"
         >
-          {mode === "login" ? "SE CONNECTER" : mode === "register" ? "CRÉER MON COMPTE" : "ENVOYER LE LIEN"}
+          {busy
+            ? "CHARGEMENT…"
+            : mode === "login"
+              ? "SE CONNECTER"
+              : mode === "register"
+                ? "CRÉER MON COMPTE"
+                : "ENVOYER LE LIEN"}
         </button>
       </form>
 
-      <div className="text-center mt-6">
+      <div className="text-center mt-5">
         {mode === "login" ? (
           <button
             type="button"
@@ -133,7 +154,7 @@ function AuthForms() {
       </div>
 
       {/* Avantages du compte */}
-      <div className="mt-12 border border-black/10 rounded-3xl p-6">
+      <div className="mt-10 border border-black/10 rounded-3xl p-6">
         <p className="font-tech text-[9px] tracking-[0.35em] text-black/40 mb-3">
           POURQUOI CRÉER UN COMPTE ?
         </p>
@@ -142,7 +163,6 @@ function AuthForms() {
           <li>Wishlist pour sauvegarder vos favoris</li>
           <li>Suivi de commande simplifié</li>
           <li>Informations sauvegardées</li>
-          <li>Programme de récompense : 1 000 € d'achats → coupon de 100 €</li>
         </ul>
         <p className="font-tech text-[9px] tracking-[0.2em] text-black/35 mt-4">
           Vous pouvez aussi commander en invité, puis créer un compte plus tard.
@@ -158,14 +178,12 @@ function Dashboard() {
   const { user, logout, wishlist } = useAuth();
   const { add } = useCart();
   const [tab, setTab] = useState("profil");
-  const [rewards, setRewards] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addr, setAddr] = useState({ label: "Domicile", full_name: user?.name || "", line1: "", line2: "", city: "", zip: "", country: "France", phone: "" });
   const navigate = useNavigate();
 
   useEffect(() => {
-    api("/account/rewards").then(setRewards).catch(() => {});
     api("/account/addresses").then((d) => setAddresses(d.addresses)).catch(() => {});
   }, []);
 
@@ -197,7 +215,6 @@ function Dashboard() {
     { id: "commandes", label: "COMMANDES", icon: Package },
     { id: "wishlist", label: "WISHLIST", icon: Heart },
     { id: "adresses", label: "ADRESSES", icon: MapPin },
-    { id: "recompense", label: "RÉCOMPENSE", icon: Gift },
   ];
 
   return (
@@ -324,38 +341,6 @@ function Dashboard() {
               <Plus className="w-4 h-4" />
               AJOUTER&nbsp;UNE&nbsp;ADRESSE
             </button>
-          )}
-        </div>
-      )}
-
-      {tab === "recompense" && (
-        <div className="max-w-xl mx-auto text-center" data-testid="account-recompense">
-          <Gift className="w-8 h-8 text-black/60 mx-auto" strokeWidth={1.5} />
-          <h3 className="font-display font-extrabold text-xl mt-6 text-black">
-            Progression vers votre récompense
-          </h3>
-          {rewards && (
-            <>
-              <p className="font-tech text-[12px] tracking-[0.2em] text-black/70 mt-6" data-testid="rewards-progress">
-                {rewards.spent} € / {rewards.threshold} €
-              </p>
-              <div className="h-2 bg-black/10 rounded-full mt-4 overflow-hidden">
-                <motion.div
-                  className="h-full bg-black"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(100, (rewards.spent / rewards.threshold) * 100)}%` }}
-                  transition={{ duration: 1, ease: EASE }}
-                />
-              </div>
-              <p className="font-tech text-[10px] tracking-[0.2em] text-black/50 mt-6 leading-relaxed">
-                {rewards.reached
-                  ? `Félicitations, vous avez obtenu un coupon de ${rewards.coupon} €.`
-                  : `À partir de ${rewards.threshold} € d'achats cumulés, vous recevez un coupon de ${rewards.coupon} €.`}
-              </p>
-              <p className="font-tech text-[9px] tracking-[0.2em] text-black/35 mt-3">
-                {rewards.guest_note}
-              </p>
-            </>
           )}
         </div>
       )}

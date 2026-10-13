@@ -94,8 +94,8 @@ export default function Checkout() {
       {!user && (
         <div className="border border-black/10 rounded-3xl p-5 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" data-testid="checkout-guest-note">
           <p className="font-tech text-[10px] tracking-[0.15em] text-black/55 leading-relaxed">
-            Vous commandez en invité. Avec un compte : historique, wishlist, suivi simplifié,
-            informations sauvegardées et programme de récompense (1 000 € → coupon 100 €).
+            Vous commandez en invité. Avec un compte : historique, wishlist, suivi simplifié
+            et informations sauvegardées.
           </p>
           <Link to="/compte" data-testid="checkout-login-link" className="shrink-0 font-tech text-[10px] tracking-[0.3em] text-black border-b border-black pb-0.5 hover:opacity-60">
             SE&nbsp;CONNECTER

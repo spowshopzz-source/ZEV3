@@ -77,7 +77,7 @@ export default function CategoryPage() {
               onChange={setFilters}
               hasProducts={groups.length > 0}
             />
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-12" data-testid="category-grid">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-12" data-testid="category-grid">
               {groups.map((g, i) => (
                 <motion.div
                   key={g.handle}

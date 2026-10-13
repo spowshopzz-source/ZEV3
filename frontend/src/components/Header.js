@@ -31,17 +31,22 @@ export const ACCESSOIRES = [
 
 function Dropdown({ label, items, light = false }) {
   return (
-    <div className="relative group">
+    <div
+      className="relative group"
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && document.activeElement) document.activeElement.blur();
+      }}
+    >
       <button
         type="button"
         className={`nav-underline flex items-center gap-1.5 font-tech text-[11px] tracking-[0.25em] transition-colors duration-200 py-2 cursor-pointer ${
-          light ? "text-white/75 group-hover:text-white" : "text-black/60 group-hover:text-[#8E1721]"
+          light ? "text-white/75 group-hover:text-white group-focus-within:text-white" : "text-black/60 group-hover:text-[#8E1721] group-focus-within:text-[#8E1721]"
         }`}
       >
         {label}
-        <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180" />
+        <ChevronDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
       </button>
-      <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+      <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 transition-all duration-200 z-50">
         <div className="bg-white border border-black/10 shadow-[0_16px_36px_rgba(0,0,0,0.07)] p-3.5 min-w-[230px] rounded-2xl">
           <div className="flex flex-col gap-2">
             {items.map((item) => (
